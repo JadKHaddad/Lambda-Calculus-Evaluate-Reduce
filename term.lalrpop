@@ -4,46 +4,17 @@ use ast::{Term, Op};
 grammar;
 
 pub Term: Box<Term> = {
-    <t1:Term> "(" <t2:Term> ")" => Box::new(Term::App(Box::new(*t1), Box::new(*t2))),
-    <t1:Term> <op:TermOp> <t2:Term> => Box::new(Term::BinOp(op, Box::new(*t1), Box::new(*t2))),
-    "(λ" <s:r"[a-z]"> ". " <t1:Term> ")" => Box::new(Term::Abs(s.as_bytes()[0], Box::new(*t1))),
+    <t1:Term> "(" <t2:Term> ")" => Box::new(Term::App(t1, t2)),
+    "(" <t1:Term> <op:TermOp> <t2:Term> ")" => Box::new(Term::BinOp(op, t1, t2)),
+    "(λ" <s:r"[a-z]"> ". " <t1:Term> ")" => Box::new(Term::Abs(s.as_bytes()[0], t1)),
     <s:r"[a-z]"> => Box::new(Term::Var(s.as_bytes()[0])),
-    <n:r"[0-9]"> => Box::new(Term::Constant(i32::from_str(n).unwrap())),
+    <n:r"[0-9]+"> => Box::new(Term::Constant(i32::from_str(n).unwrap())),
 
 }
 
 TermOp: Op = {
-    "*" => Op::Times,
-    "/" => Op::Divide,
-    "+" => Op::Plus,
-    "-" => Op::Minus,
+    "*" => Op::Mul,
+    "/" => Op::Div,
+    "+" => Op::Add,
+    "-" => Op::Sub,
 }
-
-// pub Expr: Box<Expr> = { // (1)
-//     Expr ExprOp Factor => Box::new(Expr::Op(<>)), // (2)
-//     Factor,
-// };
-
-// ExprOp: Opcode = { // (3)
-//     "+" => Opcode::Add,
-//     "-" => Opcode::Sub,
-// };
-
-// Factor: Box<Expr> = {
-//     Factor FactorOp Term => Box::new(Expr::Op(<>)),
-//     Term,
-// };
-
-// FactorOp: Opcode = {
-//     "*" => Opcode::Mul,
-//     "/" => Opcode::Div,
-// };
-
-// Term: Box<Expr> = {
-//     Num => Box::new(Expr::Number(<>)), // (4)
-//     "(" <Expr> ")"
-// };
-
-// Num: i32 = {
-//     r"[0-9]+" => i32::from_str(<>).unwrap()
-// };

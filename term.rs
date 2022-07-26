@@ -1,20 +1,20 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: f37be8e2670932d2a711f7e22ab7725820f216193042cde6eef614fb0e081cb7
-use crate::ast::{Op, Term};
+// sha3: e49bbb210197c8f5db8a30095e8eebad363a3c744c066d117505f193546faee0
 use std::str::FromStr;
+use ast::{Term, Op};
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
 use self::__lalrpop_util::state_machine as __state_machine;
-extern crate alloc;
 extern crate core;
+extern crate alloc;
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
 mod __parse__Term {
     #![allow(non_snake_case, non_camel_case_types, unused_mut, unused_variables, unused_imports, unused_parens, clippy::all)]
 
     use std::str::FromStr;
-    use crate::ast::{Term, Op};
+    use ast::{Term, Op};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -587,7 +587,7 @@ pub use self::__parse__Term::TermParser;
 mod __intern_token {
     #![allow(unused_imports)]
     use std::str::FromStr;
-    use crate::ast::{Term, Op};
+    use ast::{Term, Op};
     #[allow(unused_extern_crates)]
     extern crate lalrpop_util as __lalrpop_util;
     #[allow(unused_imports)]
@@ -614,101 +614,140 @@ mod __intern_token {
 pub(crate) use self::__lalrpop_util::lexer::Token;
 
 #[allow(unused_variables)]
-fn __action0<'input>(input: &'input str, (_, __0, _): (usize, Box<Term>, usize)) -> Box<Term> {
+fn __action0<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, Box<Term>, usize),
+) -> Box<Term>
+{
     __0
 }
 
 #[allow(unused_variables)]
-fn __action1<'input>(
+fn __action1<
+    'input,
+>(
     input: &'input str,
     (_, t1, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t2, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Term> {
+) -> Box<Term>
+{
     Box::new(Term::App(t1, t2))
 }
 
 #[allow(unused_variables)]
-fn __action2<'input>(
+fn __action2<
+    'input,
+>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, t1, _): (usize, Box<Term>, usize),
     (_, op, _): (usize, Op, usize),
     (_, t2, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Term> {
+) -> Box<Term>
+{
     Box::new(Term::BinOp(op, t1, t2))
 }
 
 #[allow(unused_variables)]
-fn __action3<'input>(
+fn __action3<
+    'input,
+>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t1, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Term> {
+) -> Box<Term>
+{
     Box::new(Term::Abs(s.as_bytes()[0], t1))
 }
 
 #[allow(unused_variables)]
-fn __action4<'input>(input: &'input str, (_, s, _): (usize, &'input str, usize)) -> Box<Term> {
+fn __action4<
+    'input,
+>(
+    input: &'input str,
+    (_, s, _): (usize, &'input str, usize),
+) -> Box<Term>
+{
     Box::new(Term::Var(s.as_bytes()[0]))
 }
 
 #[allow(unused_variables)]
-fn __action5<'input>(input: &'input str, (_, n, _): (usize, &'input str, usize)) -> Box<Term> {
+fn __action5<
+    'input,
+>(
+    input: &'input str,
+    (_, n, _): (usize, &'input str, usize),
+) -> Box<Term>
+{
     Box::new(Term::Constant(i32::from_str(n).unwrap()))
 }
 
 #[allow(unused_variables)]
-fn __action6<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action6<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Mul
 }
 
 #[allow(unused_variables)]
-fn __action7<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action7<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Div
 }
 
 #[allow(unused_variables)]
-fn __action8<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action8<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Add
 }
 
 #[allow(unused_variables)]
-fn __action9<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action9<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Sub
 }
 
-pub trait __ToTriple<'input> {
-    fn to_triple(
-        value: Self,
-    ) -> Result<
-        (usize, Token<'input>, usize),
-        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
-    >;
+pub trait __ToTriple<'input, >
+{
+    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>;
 }
 
-impl<'input> __ToTriple<'input> for (usize, Token<'input>, usize) {
-    fn to_triple(
-        value: Self,
-    ) -> Result<
-        (usize, Token<'input>, usize),
-        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
-    > {
+impl<'input, > __ToTriple<'input, > for (usize, Token<'input>, usize)
+{
+    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>> {
         Ok(value)
     }
 }
-impl<'input> __ToTriple<'input> for Result<(usize, Token<'input>, usize), &'static str> {
-    fn to_triple(
-        value: Self,
-    ) -> Result<
-        (usize, Token<'input>, usize),
-        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
-    > {
+impl<'input, > __ToTriple<'input, > for Result<(usize, Token<'input>, usize), &'static str>
+{
+    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>> {
         match value {
             Ok(v) => Ok(v),
             Err(error) => Err(__lalrpop_util::ParseError::User { error }),
