@@ -39,3 +39,5 @@ fn main() {
     //println!("Term: [ {} ] = [ {} ]", term, term.evaluate());
     //println!("----------------------------");
 }
+
+//TODO: change how you parse OP
