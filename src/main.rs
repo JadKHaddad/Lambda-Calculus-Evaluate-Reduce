@@ -45,7 +45,7 @@ fn main() {
     );
     println!("----------------------------");
     let term = term::TermParser::new()
-        .parse("((λx ((λy ((x + y) * y)) 3)) 4)")
+        .parse("((λx((λy((x+y)*y))3))4)")
         .unwrap();
     println!("Term: [ {} ] = [ {} ]", term, term.evaluate());
     println!("Term: [ {:?} ]", term);
