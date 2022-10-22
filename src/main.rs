@@ -50,6 +50,30 @@ fn main() {
     println!("Term: [ {} ] = [ {} ]", term, term.evaluate());
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
+    let term = term::TermParser::new()
+    .parse("(((ux)(yz))(λv(vy)))")
+    .unwrap();
+    println!("Term: [ {} ]", term);
+    println!("Term: [ {:?} ]", term);
+    println!("----------------------------");
+    let term = term::TermParser::new()
+    .parse("((((λx(λy(λz((xz)(yz)))))u)v)w)")
+    .unwrap();
+    println!("Term: [ {} ]", term);
+    println!("Term: [ {:?} ]", term);
+    println!("----------------------------");
+    let term = term::TermParser::new()
+    .parse("(((w(λx(λy(λz((xz)(yz))))))u)v)")
+    .unwrap();
+    println!("Term: [ {} ]", term);
+    println!("Term: [ {:?} ]", term);
+    println!("----------------------------");
+    let term = term::TermParser::new()
+    .parse("((λx(xx))(λx(xx)))")
+    .unwrap();
+    println!("Term: [ {} ]", term);
+    println!("Term: [ {:?} ]", term);
+    println!("----------------------------");
 }
 
 //TODO: "." should be parsed to generate nested Abstract
