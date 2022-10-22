@@ -5,7 +5,7 @@ pub enum Term {
     Constant(i32),
     BinOp(Op, Box<Term>, Box<Term>),
     Var(u8),
-    Abs(u8, Box<Term>),
+    Abs(u8 /*var*/, Box<Term>),
     App(Box<Term> /*func*/, Box<Term> /*arg*/),
 }
 
@@ -108,8 +108,8 @@ impl Term {
                 Term::Abs(arg, body) => {
                     values.insert(*arg, t2);
                     body.eval(values)
-                },
-                //TODO: match Term::App and evaluate it
+                }
+                //TODO: Term::App (is it possible to evaluate App(App,..)?
                 //Err
                 _ => panic!(),
             },
