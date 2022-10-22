@@ -6,6 +6,7 @@ pub enum Term {
     BinOp(Op, Box<Term>, Box<Term>),
     Var(u8),
     Abs(u8 /*var*/, Box<Term>),
+    AbsP(Vec<u8>, Box<Term>), //TODO: AbsP into Abs should be implemented // TODO: for now only capital letters are supported for the "." operator
     App(Box<Term> /*func*/, Box<Term> /*arg*/),
 }
 
@@ -25,6 +26,19 @@ impl fmt::Display for Term {
             Term::Abs(var, term) => write!(f, "(λ{} {})", *var as char, term),
             Term::App(t1, t2) => write!(f, "({} {})", t1, t2),
             Term::BinOp(op, t1, t2) => write!(f, "({} {} {})", t1, op, t2),
+            Term::AbsP(vars, term) => { //TODO: AbsP into Abs should be implemented
+                let mut res = String::from("");
+                for (i, var) in vars.iter().enumerate() {
+                    res.push_str(format!("(λ{} ", *var as char).as_str());
+                    if i == vars.len() - 1 {
+                        res.push_str(format!("{})", term).as_str());
+                    }
+                }
+                for _ in 0..vars.len() {
+                    res.push_str(")");
+                }
+                write!(f, "{}", res)
+            }
         }
     }
 }

@@ -2,6 +2,14 @@ pub mod ast;
 pub mod term;
 fn main() {
     println!("----------------------------");
+    let term = term::TermParser::new().parse("(λXYZ. (x x))").unwrap();
+    println!("Term: [ {} ]", term);
+    println!("----------------------------");
+    let term = term::TermParser::new()
+        .parse("(λa (λb (λc (x x))))")
+        .unwrap();
+    println!("Term: [ {} ]", term);
+    println!("----------------------------");
     let term = term::TermParser::new()
         .parse("((λx (x * ((λx (x + ((λx x) 3))) 8))) 3)")
         .unwrap();
@@ -51,26 +59,24 @@ fn main() {
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
     let term = term::TermParser::new()
-    .parse("(((ux)(yz))(λv(vy)))")
-    .unwrap();
+        .parse("(((ux)(yz))(λv(vy)))")
+        .unwrap();
     println!("Term: [ {} ]", term);
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
     let term = term::TermParser::new()
-    .parse("((((λx(λy(λz((xz)(yz)))))u)v)w)")
-    .unwrap();
+        .parse("((((λx(λy(λz((xz)(yz)))))u)v)w)")
+        .unwrap();
     println!("Term: [ {} ]", term);
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
     let term = term::TermParser::new()
-    .parse("(((w(λx(λy(λz((xz)(yz))))))u)v)")
-    .unwrap();
+        .parse("(((w(λx(λy(λz((xz)(yz))))))u)v)")
+        .unwrap();
     println!("Term: [ {} ]", term);
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
-    let term = term::TermParser::new()
-    .parse("((λx(xx))(λx(xx)))")
-    .unwrap();
+    let term = term::TermParser::new().parse("((λx(xx))(λx(xx)))").unwrap();
     println!("Term: [ {} ]", term);
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
