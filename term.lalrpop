@@ -4,7 +4,7 @@ use ast::{Term, Op};
 grammar;
 
 pub Term: Box<Term> = {
-    <t1:Term> "(" <t2:Term> ")" => Box::new(Term::App(t1, t2)),
+    "(" <t1:Term> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
     "(" <t1:Term> <op:TermOp> <t2:Term> ")" => Box::new(Term::BinOp(op, t1, t2)),
     "(λ" <s:r"[a-z]"> ". " <t1:Term> ")" => Box::new(Term::Abs(s.as_bytes()[0], t1)),
     <s:r"[a-z]"> => Box::new(Term::Var(s.as_bytes()[0])),

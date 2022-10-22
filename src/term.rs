@@ -1,13 +1,13 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: f37be8e2670932d2a711f7e22ab7725820f216193042cde6eef614fb0e081cb7
-use crate::ast::{Op, Term};
+// sha3: 5b23083ecbe458ff61af06bce5e3083b03ee5d0f7eb12349173c8e65a3d005dc
 use std::str::FromStr;
+use crate::ast::{Term, Op};
 #[allow(unused_extern_crates)]
 extern crate lalrpop_util as __lalrpop_util;
 #[allow(unused_imports)]
 use self::__lalrpop_util::state_machine as __state_machine;
-extern crate alloc;
 extern crate core;
+extern crate alloc;
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
 mod __parse__Term {
@@ -31,47 +31,45 @@ mod __parse__Term {
     }
     const __ACTION: &[i8] = &[
         // State 0
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 10,
+        2, 7, 0, 0, 0, 0, 0, 0, 8, 9,
         // State 1
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 10,
+        2, 7, 0, 0, 0, 0, 0, 0, 8, 9,
         // State 2
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 10,
+        2, 7, 0, 12, 13, 14, 0, 15, 8, 9,
         // State 3
-        3, 0, 0, 13, 14, 15, 0, 16, 0, 0,
+        2, 7, 0, 0, 0, 0, 0, 0, 8, 9,
         // State 4
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 10,
+        2, 7, 0, 0, 0, 0, 0, 0, 8, 9,
         // State 5
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 10,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 6
-        3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 10,
         // State 7
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 11,
+        -5, -5, -5, -5, -5, -5, 0, -5, -5, -5,
         // State 8
-        -5, 0, -5, -5, -5, -5, 0, -5, 0, 0,
+        -4, -4, -4, -4, -4, -4, 0, -4, -4, -4,
         // State 9
-        -4, 0, -4, -4, -4, -4, 0, -4, 0, 0,
+        0, 0, 0, 0, 0, 0, 5, 0, 0, 0,
         // State 10
-        0, 0, 0, 0, 0, 0, 6, 0, 0, 0,
+        0, 0, 16, 0, 0, 0, 0, 0, 0, 0,
         // State 11
-        3, 0, 17, 0, 0, 0, 0, 0, 0, 0,
-        // State 12
         -6, -6, 0, 0, 0, 0, 0, 0, -6, -6,
-        // State 13
+        // State 12
         -8, -8, 0, 0, 0, 0, 0, 0, -8, -8,
-        // State 14
+        // State 13
         -9, -9, 0, 0, 0, 0, 0, 0, -9, -9,
-        // State 15
+        // State 14
         -7, -7, 0, 0, 0, 0, 0, 0, -7, -7,
+        // State 15
+        -1, -1, -1, -1, -1, -1, 0, -1, -1, -1,
         // State 16
-        -1, 0, -1, -1, -1, -1, 0, -1, 0, 0,
+        0, 0, 19, 0, 0, 0, 0, 0, 0, 0,
         // State 17
-        3, 0, 20, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 20, 0, 0, 0, 0, 0, 0, 0,
         // State 18
-        3, 0, 21, 0, 0, 0, 0, 0, 0, 0,
+        -2, -2, -2, -2, -2, -2, 0, -2, -2, -2,
         // State 19
-        -2, 0, -2, -2, -2, -2, 0, -2, 0, 0,
-        // State 20
-        -3, 0, -3, -3, -3, -3, 0, -3, 0, 0,
+        -3, -3, -3, -3, -3, -3, 0, -3, -3, -3,
     ];
     fn __action(state: i8, integer: usize) -> i8 {
         __ACTION[(state as usize) * 10 + integer]
@@ -88,15 +86,15 @@ mod __parse__Term {
         // State 4
         0,
         // State 5
-        0,
-        // State 6
         -10,
-        // State 7
+        // State 6
         0,
-        // State 8
+        // State 7
         -5,
-        // State 9
+        // State 8
         -4,
+        // State 9
+        0,
         // State 10
         0,
         // State 11
@@ -108,28 +106,26 @@ mod __parse__Term {
         // State 14
         0,
         // State 15
-        0,
-        // State 16
         -1,
+        // State 16
+        0,
         // State 17
         0,
         // State 18
-        0,
-        // State 19
         -2,
-        // State 20
+        // State 19
         -3,
     ];
     fn __goto(state: i8, nt: usize) -> i8 {
         match nt {
             0 => match state {
-                0 => 6,
-                2 => 11,
+                0 => 5,
+                2 => 10,
+                3 => 16,
                 4 => 17,
-                5 => 18,
-                _ => 3,
+                _ => 2,
             },
-            1 => 4,
+            1 => 3,
             _ => 0,
         }
     }
@@ -423,12 +419,12 @@ mod __parse__Term {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // Term = Term, "(", Term, ")" => ActionFn(1);
+        // Term = "(", Term, Term, ")" => ActionFn(1);
         assert!(__symbols.len() >= 4);
         let __sym3 = __pop_Variant0(__symbols);
         let __sym2 = __pop_Variant1(__symbols);
-        let __sym1 = __pop_Variant0(__symbols);
-        let __sym0 = __pop_Variant1(__symbols);
+        let __sym1 = __pop_Variant1(__symbols);
+        let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0.clone();
         let __end = __sym3.2.clone();
         let __nt = super::__action1::<>(input, __sym0, __sym1, __sym2, __sym3);
@@ -614,101 +610,140 @@ mod __intern_token {
 pub(crate) use self::__lalrpop_util::lexer::Token;
 
 #[allow(unused_variables)]
-fn __action0<'input>(input: &'input str, (_, __0, _): (usize, Box<Term>, usize)) -> Box<Term> {
+fn __action0<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, Box<Term>, usize),
+) -> Box<Term>
+{
     __0
 }
 
 #[allow(unused_variables)]
-fn __action1<'input>(
+fn __action1<
+    'input,
+>(
     input: &'input str,
-    (_, t1, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
+    (_, t1, _): (usize, Box<Term>, usize),
     (_, t2, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Term> {
+) -> Box<Term>
+{
     Box::new(Term::App(t1, t2))
 }
 
 #[allow(unused_variables)]
-fn __action2<'input>(
+fn __action2<
+    'input,
+>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, t1, _): (usize, Box<Term>, usize),
     (_, op, _): (usize, Op, usize),
     (_, t2, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Term> {
+) -> Box<Term>
+{
     Box::new(Term::BinOp(op, t1, t2))
 }
 
 #[allow(unused_variables)]
-fn __action3<'input>(
+fn __action3<
+    'input,
+>(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, t1, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Box<Term> {
+) -> Box<Term>
+{
     Box::new(Term::Abs(s.as_bytes()[0], t1))
 }
 
 #[allow(unused_variables)]
-fn __action4<'input>(input: &'input str, (_, s, _): (usize, &'input str, usize)) -> Box<Term> {
+fn __action4<
+    'input,
+>(
+    input: &'input str,
+    (_, s, _): (usize, &'input str, usize),
+) -> Box<Term>
+{
     Box::new(Term::Var(s.as_bytes()[0]))
 }
 
 #[allow(unused_variables)]
-fn __action5<'input>(input: &'input str, (_, n, _): (usize, &'input str, usize)) -> Box<Term> {
+fn __action5<
+    'input,
+>(
+    input: &'input str,
+    (_, n, _): (usize, &'input str, usize),
+) -> Box<Term>
+{
     Box::new(Term::Constant(i32::from_str(n).unwrap()))
 }
 
 #[allow(unused_variables)]
-fn __action6<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action6<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Mul
 }
 
 #[allow(unused_variables)]
-fn __action7<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action7<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Div
 }
 
 #[allow(unused_variables)]
-fn __action8<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action8<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Add
 }
 
 #[allow(unused_variables)]
-fn __action9<'input>(input: &'input str, (_, __0, _): (usize, &'input str, usize)) -> Op {
+fn __action9<
+    'input,
+>(
+    input: &'input str,
+    (_, __0, _): (usize, &'input str, usize),
+) -> Op
+{
     Op::Sub
 }
 
-pub trait __ToTriple<'input> {
-    fn to_triple(
-        value: Self,
-    ) -> Result<
-        (usize, Token<'input>, usize),
-        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
-    >;
+pub trait __ToTriple<'input, >
+{
+    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>;
 }
 
-impl<'input> __ToTriple<'input> for (usize, Token<'input>, usize) {
-    fn to_triple(
-        value: Self,
-    ) -> Result<
-        (usize, Token<'input>, usize),
-        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
-    > {
+impl<'input, > __ToTriple<'input, > for (usize, Token<'input>, usize)
+{
+    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>> {
         Ok(value)
     }
 }
-impl<'input> __ToTriple<'input> for Result<(usize, Token<'input>, usize), &'static str> {
-    fn to_triple(
-        value: Self,
-    ) -> Result<
-        (usize, Token<'input>, usize),
-        __lalrpop_util::ParseError<usize, Token<'input>, &'static str>,
-    > {
+impl<'input, > __ToTriple<'input, > for Result<(usize, Token<'input>, usize), &'static str>
+{
+    fn to_triple(value: Self) -> Result<(usize,Token<'input>,usize), __lalrpop_util::ParseError<usize, Token<'input>, &'static str>> {
         match value {
             Ok(v) => Ok(v),
             Err(error) => Err(__lalrpop_util::ParseError::User { error }),

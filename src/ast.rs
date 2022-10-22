@@ -23,7 +23,7 @@ impl fmt::Display for Term {
             Term::Constant(value) => write!(f, "{}", value),
             Term::Var(var) => write!(f, "{}", *var as char),
             Term::Abs(var, term) => write!(f, "(λ{}. {})", *var as char, term),
-            Term::App(t1, t2) => write!(f, "{}({})", t1, t2),
+            Term::App(t1, t2) => write!(f, "({} {})", t1, t2),
             Term::BinOp(op, t1, t2) => write!(f, "({} {} {})", t1, op, t2),
         }
     }
