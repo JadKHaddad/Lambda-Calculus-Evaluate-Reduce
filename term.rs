@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: 7accad95e11e4ab4a8a661132df38df0227ba7b8e44a29a2b998e251fc9ba0b9
+// sha3: 966b1502bec6edc9bcd811aad97beaf861133853e5540c021f64f6a00624bbf7
 use std::str::FromStr;
 use ast::{Term, Op};
 #[allow(unused_extern_crates)]
@@ -716,7 +716,11 @@ fn __action4<
 ) -> Box<Term>
 {
     {
-        Box::new(Term::AbsP(s.as_bytes().to_vec(), t1))
+        let mut t = t1;
+        for var in s.as_bytes().to_vec().iter().rev() {
+            t = Box::new(Term::Abs(*var, t));
+        }
+        t
     }
 }
 

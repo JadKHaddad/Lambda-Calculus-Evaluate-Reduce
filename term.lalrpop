@@ -8,7 +8,11 @@ pub Term: Box<Term> = {
     "(" <t1:Term> <op:TermOp> <t2:Term> ")" => Box::new(Term::BinOp(op, t1, t2)),
     "(λ" <s:r"[a-z]"> <t1:Term> ")" => Box::new(Term::Abs(s.as_bytes()[0], t1)),
     "(λ" <s:r"[A-Z]+"> "." <t1:Term> ")" => {
-        Box::new(Term::AbsP(s.as_bytes().to_vec(), t1))
+        let mut t = t1;
+        for var in s.as_bytes().to_vec().iter().rev() {
+            t = Box::new(Term::Abs(*var, t));
+        }
+        t
     },
     <s:r"[a-z]"> => Box::new(Term::Var(s.as_bytes()[0])),
     <n:r"[0-9]+"> => Box::new(Term::Constant(i32::from_str(n).unwrap())),
