@@ -7,10 +7,12 @@ pub Term: Box<Term> = {
     "(" <t1:Term> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
     "(" <t1:Term> <op:TermOp> <t2:Term> ")" => Box::new(Term::BinOp(op, t1, t2)),
     "(λ" <s:r"[a-z]"> <t1:Term> ")" => Box::new(Term::Abs(s.as_bytes()[0], t1)),
-    "(λ" <s:r"[A-Z]+"> "." <t1:Term> ")" => {
+    "(λ" <s:r"[a-z]+\."> <t1:Term> ")" => {
         let mut t = t1;
-        for var in s.as_bytes().to_vec().iter().rev() {
-            t = Box::new(Term::Abs(*var, t));
+        for (i, var) in s.as_bytes().to_vec().iter().rev().enumerate() {
+            if i != 0 {
+                t = Box::new(Term::Abs(*var, t));
+            }
         }
         t
     },

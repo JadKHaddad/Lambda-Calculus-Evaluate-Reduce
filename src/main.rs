@@ -2,7 +2,10 @@ pub mod ast;
 pub mod term;
 fn main() {
     println!("----------------------------");
-    let term = term::TermParser::new().parse("(λXYZ. (x x))").unwrap();
+    let term = term::TermParser::new().parse("(λz. (x x))").unwrap();
+    println!("Term: [ {} ]", term);
+    println!("----------------------------");
+    let term = term::TermParser::new().parse("(λxyzu. (x x))").unwrap();
     println!("Term: [ {} ]", term);
     println!("----------------------------");
     let term = term::TermParser::new()
@@ -81,9 +84,3 @@ fn main() {
     println!("Term: [ {:?} ]", term);
     println!("----------------------------");
 }
-
-//TODO: "." should be parsed to generate nested Abstract
-// λx. M = (λx (M))
-// λxyz. M = (λx (λy (λz (M))))
-// λxy. MN = (λx (λy ((M) (N)))) / (λx (λy (MN))))
-// (λxy. M) N = ((λx (λy (M))) N)

@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: 966b1502bec6edc9bcd811aad97beaf861133853e5540c021f64f6a00624bbf7
+// sha3: c16d658701ca6eb04aed4a61d15730b48dc43be6f22cbcbdefcaa670f44bba2d
 use std::str::FromStr;
 use ast::{Term, Op};
 #[allow(unused_extern_crates)]
@@ -31,54 +31,52 @@ mod __parse__Term {
     }
     const __ACTION: &[i8] = &[
         // State 0
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 0, 10,
+        2, 8, 0, 0, 0, 0, 0, 9, 10, 0,
         // State 1
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 0, 10,
+        2, 8, 0, 0, 0, 0, 0, 9, 10, 0,
         // State 2
-        2, 8, 0, 13, 14, 15, 0, 16, 9, 0, 10,
+        2, 8, 0, 12, 13, 14, 15, 9, 10, 0,
         // State 3
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 0, 10,
+        2, 8, 0, 0, 0, 0, 0, 9, 10, 0,
         // State 4
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 0, 10,
+        2, 8, 0, 0, 0, 0, 0, 9, 10, 0,
         // State 5
-        2, 8, 0, 0, 0, 0, 0, 0, 9, 0, 10,
+        2, 8, 0, 0, 0, 0, 0, 9, 10, 0,
         // State 6
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // State 7
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 4,
+        0, 0, 0, 0, 0, 0, 0, 0, 4, 5,
         // State 8
-        -6, -6, -6, -6, -6, -6, 0, -6, -6, 0, -6,
+        -6, -6, -6, -6, -6, -6, -6, -6, -6, 0,
         // State 9
-        -5, -5, -5, -5, -5, -5, 0, -5, -5, 0, -5,
+        -5, -5, -5, -5, -5, -5, -5, -5, -5, 0,
         // State 10
-        0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0,
+        0, 0, 18, 0, 0, 0, 0, 0, 0, 0,
         // State 11
-        0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0,
+        -7, -7, 0, 0, 0, 0, 0, -7, -7, 0,
         // State 12
-        -7, -7, 0, 0, 0, 0, 0, 0, -7, 0, -7,
+        -9, -9, 0, 0, 0, 0, 0, -9, -9, 0,
         // State 13
-        -9, -9, 0, 0, 0, 0, 0, 0, -9, 0, -9,
+        -10, -10, 0, 0, 0, 0, 0, -10, -10, 0,
         // State 14
-        -10, -10, 0, 0, 0, 0, 0, 0, -10, 0, -10,
+        -8, -8, 0, 0, 0, 0, 0, -8, -8, 0,
         // State 15
-        -8, -8, 0, 0, 0, 0, 0, 0, -8, 0, -8,
+        0, 0, 20, 0, 0, 0, 0, 0, 0, 0,
         // State 16
-        0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 21, 0, 0, 0, 0, 0, 0, 0,
         // State 17
-        -1, -1, -1, -1, -1, -1, 0, -1, -1, 0, -1,
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
         // State 18
-        0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 22, 0, 0, 0, 0, 0, 0, 0,
         // State 19
-        0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0,
+        -3, -3, -3, -3, -3, -3, -3, -3, -3, 0,
         // State 20
-        -3, -3, -3, -3, -3, -3, 0, -3, -3, 0, -3,
+        -4, -4, -4, -4, -4, -4, -4, -4, -4, 0,
         // State 21
-        -2, -2, -2, -2, -2, -2, 0, -2, -2, 0, -2,
-        // State 22
-        -4, -4, -4, -4, -4, -4, 0, -4, -4, 0, -4,
+        -2, -2, -2, -2, -2, -2, -2, -2, -2, 0,
     ];
     fn __action(state: i8, integer: usize) -> i8 {
-        __ACTION[(state as usize) * 11 + integer]
+        __ACTION[(state as usize) * 10 + integer]
     }
     const __EOF_ACTION: &[i8] = &[
         // State 0
@@ -120,25 +118,23 @@ mod __parse__Term {
         // State 18
         0,
         // State 19
-        0,
-        // State 20
         -3,
+        // State 20
+        -4,
         // State 21
         -2,
-        // State 22
-        -4,
     ];
     fn __goto(state: i8, nt: usize) -> i8 {
         match nt {
             0 => match state {
                 0 => 6,
-                2 => 11,
-                3 => 16,
-                4 => 18,
-                5 => 19,
+                2 => 10,
+                3 => 15,
+                4 => 16,
+                5 => 18,
                 _ => 2,
             },
-            1 => 4,
+            1 => 5,
             _ => 0,
         }
     }
@@ -150,11 +146,10 @@ mod __parse__Term {
             r###""*""###,
             r###""+""###,
             r###""-""###,
-            r###"".""###,
             r###""/""###,
             r###"r#"[0-9]+"#"###,
-            r###"r#"[A-Z]+"#"###,
             r###"r#"[a-z]"#"###,
+            r###"r#"[a-z]+\\."#"###,
         ];
         __TERMINAL.iter().enumerate().filter_map(|(index, terminal)| {
             let next_state = __action(__state, index);
@@ -207,7 +202,7 @@ mod __parse__Term {
 
         #[inline]
         fn error_action(&self, state: i8) -> i8 {
-            __action(state, 11 - 1)
+            __action(state, 10 - 1)
         }
 
         #[inline]
@@ -277,10 +272,9 @@ mod __parse__Term {
             Token(7, _) if true => Some(4),
             Token(8, _) if true => Some(5),
             Token(9, _) if true => Some(6),
-            Token(10, _) if true => Some(7),
-            Token(0, _) if true => Some(8),
-            Token(1, _) if true => Some(9),
-            Token(2, _) if true => Some(10),
+            Token(0, _) if true => Some(7),
+            Token(1, _) if true => Some(8),
+            Token(2, _) if true => Some(9),
             _ => None,
         }
     }
@@ -293,8 +287,8 @@ mod __parse__Term {
     ) -> __Symbol<'input>
     {
         match __token_index {
-            0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 => match __token {
-                Token(3, __tok0) | Token(4, __tok0) | Token(5, __tok0) | Token(6, __tok0) | Token(7, __tok0) | Token(8, __tok0) | Token(9, __tok0) | Token(10, __tok0) | Token(0, __tok0) | Token(1, __tok0) | Token(2, __tok0) if true => __Symbol::Variant0(__tok0),
+            0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 => match __token {
+                Token(3, __tok0) | Token(4, __tok0) | Token(5, __tok0) | Token(6, __tok0) | Token(7, __tok0) | Token(8, __tok0) | Token(9, __tok0) | Token(0, __tok0) | Token(1, __tok0) | Token(2, __tok0) if true => __Symbol::Variant0(__tok0),
                 _ => unreachable!(),
             },
             _ => unreachable!(),
@@ -501,18 +495,17 @@ mod __parse__Term {
         _: core::marker::PhantomData<(&'input ())>,
     ) -> (usize, usize)
     {
-        // Term = "(λ", r#"[A-Z]+"#, ".", Term, ")" => ActionFn(4);
-        assert!(__symbols.len() >= 5);
-        let __sym4 = __pop_Variant0(__symbols);
-        let __sym3 = __pop_Variant1(__symbols);
-        let __sym2 = __pop_Variant0(__symbols);
+        // Term = "(λ", r#"[a-z]+\\."#, Term, ")" => ActionFn(4);
+        assert!(__symbols.len() >= 4);
+        let __sym3 = __pop_Variant0(__symbols);
+        let __sym2 = __pop_Variant1(__symbols);
         let __sym1 = __pop_Variant0(__symbols);
         let __sym0 = __pop_Variant0(__symbols);
         let __start = __sym0.0.clone();
-        let __end = __sym4.2.clone();
-        let __nt = super::__action4::<>(input, __sym0, __sym1, __sym2, __sym3, __sym4);
+        let __end = __sym3.2.clone();
+        let __nt = super::__action4::<>(input, __sym0, __sym1, __sym2, __sym3);
         __symbols.push((__start, __Symbol::Variant1(__nt), __end));
-        (5, 0)
+        (4, 0)
     }
     pub(crate) fn __reduce4<
         'input,
@@ -632,15 +625,14 @@ mod __intern_token {
     pub fn new_builder() -> __lalrpop_util::lexer::MatcherBuilder {
         let __strs: &[(&str, bool)] = &[
             ("^([0-9]+)", false),
-            ("^([A-Z]+)", false),
             ("^([a-z])", false),
+            ("^([a-z]+\\.)", false),
             ("^(\\()", false),
             ("^(\\(λ)", false),
             ("^(\\))", false),
             ("^(\\*)", false),
             ("^(\\+)", false),
             ("^(\\-)", false),
-            ("^(\\.)", false),
             ("^(/)", false),
             (r"^(\s*)", true),
         ];
@@ -710,15 +702,16 @@ fn __action4<
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, s, _): (usize, &'input str, usize),
-    (_, _, _): (usize, &'input str, usize),
     (_, t1, _): (usize, Box<Term>, usize),
     (_, _, _): (usize, &'input str, usize),
 ) -> Box<Term>
 {
     {
         let mut t = t1;
-        for var in s.as_bytes().to_vec().iter().rev() {
-            t = Box::new(Term::Abs(*var, t));
+        for (i, var) in s.as_bytes().to_vec().iter().rev().enumerate() {
+            if i != 0 {
+                t = Box::new(Term::Abs(*var, t));
+            }
         }
         t
     }
