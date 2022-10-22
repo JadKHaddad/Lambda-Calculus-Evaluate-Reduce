@@ -108,7 +108,8 @@ impl Term {
                 Term::Abs(arg, body) => {
                     values.insert(*arg, t2);
                     body.eval(values)
-                }
+                },
+                //TODO: match Term::App and evaluate it
                 //Err
                 _ => panic!(),
             },

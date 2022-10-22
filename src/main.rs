@@ -32,4 +32,10 @@ fn main() {
     term.reduce();
     println!("Term: [ {} ] (After deep reduction) = [ {} ]", term_temp, term);
     println!("----------------------------");
+    // TODO: this will not evaluate, maybe it should?
+    // let term = term::TermParser::new()
+    // .parse("(((λx. (λy. ((x + y) * y))) 3) 4)")
+    // .unwrap();
+    //println!("Term: [ {} ] = [ {} ]", term, term.evaluate());
+    //println!("----------------------------");
 }
