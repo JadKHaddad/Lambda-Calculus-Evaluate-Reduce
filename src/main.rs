@@ -11,7 +11,6 @@ fn main() {
     let term = term::SParser::new().parse("λxyzu .(xx)").unwrap();
     println!("Term: [ {} ]", term);
     println!("----------------------------");
-
     let term = term::SParser::new()
         .parse("(λa (λb (λc (x x))))")
         .unwrap();
