@@ -124,7 +124,7 @@ impl Term {
 
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
         let mut t = t1;
-        for var in vs.iter().rev() {
+        for var in vs.iter() {
             t = Box::new(Term::Abs(*var, t));
         }
         t
