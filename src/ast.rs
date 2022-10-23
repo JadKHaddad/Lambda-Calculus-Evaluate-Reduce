@@ -121,4 +121,12 @@ impl Term {
     pub fn evaluate(&self) -> i32 {
         self.eval(&mut std::collections::HashMap::new())
     }
+
+    pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
+        let mut t = t1;
+        for var in vs.iter().rev() {
+            t = Box::new(Term::Abs(*var, t));
+        }
+        t
+    }
 }
