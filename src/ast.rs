@@ -1,5 +1,5 @@
-use std::fmt;
 use std::collections::HashSet;
+use std::fmt;
 
 #[derive(Eq, PartialEq, Debug, Clone, Hash)]
 pub enum Term {
@@ -25,7 +25,7 @@ impl fmt::Display for Term {
             Term::Var(var) => write!(f, "{}", *var as char),
             Term::Abs(var, term) => write!(f, "(λ{} {})", *var as char, term),
             Term::App(t1, t2) => write!(f, "({} {})", t1, t2),
-            Term::BinOp(op, t1, t2) => write!(f, "({} {} {})", t1, op, t2)
+            Term::BinOp(op, t1, t2) => write!(f, "({} {} {})", t1, op, t2),
         }
     }
 }
@@ -44,56 +44,58 @@ impl fmt::Display for Op {
 impl Term {
     pub fn get_bound_vars(&self) -> HashSet<Term> {
         match self {
-            Term::Var(_) | Term::Constant(_) | Term::BinOp(..)=> HashSet::new(),
             Term::Abs(arg, body) => {
                 let mut x: HashSet<Term> = HashSet::new();
                 x.insert(Term::Var(*arg));
                 let y = body.get_bound_vars();
                 x.extend(y);
-                return x
-            },
+                return x;
+            }
             Term::App(t1, t2) => {
                 let mut x = t1.get_bound_vars();
                 let y = t2.get_bound_vars();
                 x.extend(y);
-                return x
+                return x;
             }
+            _ => HashSet::new(),
         }
     }
 
     pub fn get_free_vars(&self) -> HashSet<Term> {
         match self {
-            Term::Constant(_) | Term::BinOp(..)=> HashSet::new(),
             Term::Var(var) => {
                 let mut x: HashSet<Term> = HashSet::new();
                 x.insert(Term::Var(*var));
-                return x
-            },
+                return x;
+            }
             Term::Abs(arg, body) => {
-                let mut y  = body.get_free_vars();
+                let mut y = body.get_free_vars();
                 let mut x: HashSet<Term> = HashSet::new();
                 x.insert(Term::Var(*arg));
                 y = y.difference(&x).cloned().collect();
-                return y
-            },
+                return y;
+            }
             Term::App(t1, t2) => {
                 let mut x = t1.get_free_vars();
                 let y = t2.get_free_vars();
                 x.extend(y);
-                return x
+                return x;
             }
+            _ => HashSet::new(),
         }
     }
 
     // Decide if `var` is free in `self`.
     fn is_free(&self, var: u8) -> bool {
-        match self {
-            Term::Var(var2) => var == *var2,
-            Term::Abs(arg, body) => (var != *arg) && body.is_free(var),
-            Term::App(t1, t2) => t1.is_free(var) || t2.is_free(var),
-            Term::Constant(_) => true,
-            _ => false,
-        }
+        let free_vars = self.get_free_vars();
+        free_vars.contains(&Term::Var(var))
+    }
+
+    // Decide if `var` is bound in `self`.
+    #[allow(dead_code)]
+    fn is_bound(&self, var: u8) -> bool {
+        let bound_vars = self.get_bound_vars();
+        bound_vars.contains(&Term::Var(var))
     }
 
     fn replace<'a>(&'a mut self, var: u8, subs: &Term) -> bool {
@@ -172,5 +174,104 @@ impl Term {
             t = Box::new(Term::Abs(*var, t));
         }
         t
+    }
+
+    // Decide if `var` is free in `self`.
+    #[deprecated(note = "use `is_free` instead")]
+    fn _is_free(&self, var: u8) -> bool {
+        match self {
+            Term::Var(var2) => var == *var2,
+            Term::Abs(arg, body) => (var != *arg) && body.is_free(var),
+            Term::App(t1, t2) => t1.is_free(var) || t2.is_free(var),
+            Term::Constant(_) => true,
+            _ => false,
+        }
+    }
+}
+
+#[derive(Eq, PartialEq, Debug, Clone, Hash)]
+pub struct Sub {
+    pub var: u8,
+    pub term1: Term,
+    pub term2: Term,
+}
+
+impl fmt::Display for Sub {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Sub({}, {})[{}]",
+            self.var as char, self.term1, self.term2
+        )
+    }
+}
+
+impl Sub {
+    pub fn create_term(&self) -> Term {
+        match &self.term2 {
+            Term::Var(var) => {
+                if var == &self.var {
+                    self.term1.clone()
+                } else {
+                    self.term2.clone()
+                }
+            }
+            Term::Constant(_) => self.term2.clone(),
+            Term::App(t1, t2) => Term::App(
+                Box::new(
+                    Sub {
+                        var: self.var,
+                        term1: self.term1.clone(),
+                        term2: t1.as_ref().clone(),
+                    }
+                    .create_term(),
+                ),
+                Box::new(
+                    Sub {
+                        var: self.var,
+                        term1: self.term1.clone(),
+                        term2: t2.as_ref().clone(),
+                    }
+                    .create_term(),
+                ),
+            ),
+            Term::Abs(arg, body) => {
+                if arg == &self.var {
+                    self.term2.clone()
+                } else if !self.term1.get_free_vars().contains(&Term::Var(arg.clone()))
+                    || !body.get_free_vars().contains(&Term::Var(self.var))
+                {
+                    Term::Abs(
+                        arg.clone(),
+                        Box::new(
+                            Sub {
+                                var: self.var,
+                                term1: self.term1.clone(),
+                                term2: body.as_ref().clone(),
+                            }
+                            .create_term(),
+                        ),
+                    )
+                } else {
+                    Term::Abs(
+                        b'z', //TODO: find a new variable
+                        Box::new(
+                            Sub {
+                                var: self.var,
+                                term1: self.term1.clone(),
+                                term2: Sub {
+                                    var: *arg,
+                                    term1: Term::Var(b'z'), //TODO: find a new variable
+                                    term2: body.as_ref().clone(),
+                                }
+                                .create_term(),
+                            }
+                            .create_term(),
+                        ),
+                    )
+                }
+            }
+            _ => panic!(),
+        }
     }
 }

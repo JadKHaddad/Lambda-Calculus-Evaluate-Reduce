@@ -27,15 +27,24 @@ struct Input {
 }
 
 fn main() {
-    let term = term::SParser::new().parse("((λx ((yz)(λx(λy(yx)))))z)").unwrap();
-    println!("Term: {}", term);
-    println!("BV: {:?}", term.get_bound_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
-    println!("FV: {:?}", term.get_free_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
-    println!("----------------------------");
-    let term = term::SParser::new().parse("((xz)(λx(λyx)))").unwrap();
-    println!("Term: {}", term);
-    println!("BV: {:?}", term.get_bound_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
-    println!("FV: {:?}", term.get_free_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    // let term = term::SParser::new().parse("((λx ((yz)(λx(λy(yx)))))z)").unwrap();
+    // println!("Term: {}", term);
+    // println!("BV: {:?}", term.get_bound_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    // println!("FV: {:?}", term.get_free_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    // println!("----------------------------");
+    // let term = term::SParser::new().parse("((xz)(λx(λyx)))").unwrap();
+    // println!("Term: {}", term);
+    // println!("BV: {:?}", term.get_bound_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    // println!("FV: {:?}", term.get_free_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    // println!("----------------------------");
+    let sub = ast::Sub {
+        var: 'y' as u8,
+        term1: *term::SParser::new().parse("(λx(λy x))").unwrap(),
+        term2: *term::SParser::new().parse("(y(λx(yx)))").unwrap(),
+    };
+    println!("Sub: {}", sub);
+    let t = sub.create_term();
+    println!("Term: {}", t);
     std::process::exit(0);
 
 
