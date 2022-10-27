@@ -27,6 +27,18 @@ struct Input {
 }
 
 fn main() {
+    let term = term::SParser::new().parse("((λx ((yz)(λx(λy(yx)))))z)").unwrap();
+    println!("Term: {}", term);
+    println!("BV: {:?}", term.get_bound_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    println!("FV: {:?}", term.get_free_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    println!("----------------------------");
+    let term = term::SParser::new().parse("((xz)(λx(λyx)))").unwrap();
+    println!("Term: {}", term);
+    println!("BV: {:?}", term.get_bound_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    println!("FV: {:?}", term.get_free_vars().iter().map(|x| x.to_string()).collect::<Vec<String>>());
+    std::process::exit(0);
+
+
     let input = fs::read_to_string("terms.yaml").expect("Unable to read file");
     let input: Input = serde_yaml::from_str(&input).expect("Unable to parse YAML");
     for input_term in input.terms {

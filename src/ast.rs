@@ -1,6 +1,7 @@
 use std::fmt;
+use std::collections::HashSet;
 
-#[derive(Eq, PartialEq, Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone, Hash)]
 pub enum Term {
     Constant(i32),
     BinOp(Op, Box<Term>, Box<Term>),
@@ -9,7 +10,7 @@ pub enum Term {
     App(Box<Term> /*func*/, Box<Term> /*arg*/),
 }
 
-#[derive(Eq, PartialEq, Debug, Clone)]
+#[derive(Eq, PartialEq, Debug, Clone, Hash)]
 pub enum Op {
     Add,
     Sub,
@@ -41,6 +42,49 @@ impl fmt::Display for Op {
 }
 
 impl Term {
+    pub fn get_bound_vars(&self) -> HashSet<Term> {
+        match self {
+            Term::Var(_) | Term::Constant(_) | Term::BinOp(..)=> HashSet::new(),
+            Term::Abs(arg, body) => {
+                let mut x: HashSet<Term> = HashSet::new();
+                x.insert(Term::Var(*arg));
+                let y = body.get_bound_vars();
+                x.extend(y);
+                return x
+            },
+            Term::App(t1, t2) => {
+                let mut x = t1.get_bound_vars();
+                let y = t2.get_bound_vars();
+                x.extend(y);
+                return x
+            }
+        }
+    }
+
+    pub fn get_free_vars(&self) -> HashSet<Term> {
+        match self {
+            Term::Constant(_) | Term::BinOp(..)=> HashSet::new(),
+            Term::Var(var) => {
+                let mut x: HashSet<Term> = HashSet::new();
+                x.insert(Term::Var(*var));
+                return x
+            },
+            Term::Abs(arg, body) => {
+                let mut y  = body.get_free_vars();
+                let mut x: HashSet<Term> = HashSet::new();
+                x.insert(Term::Var(*arg));
+                y = y.difference(&x).cloned().collect();
+                return y
+            },
+            Term::App(t1, t2) => {
+                let mut x = t1.get_free_vars();
+                let y = t2.get_free_vars();
+                x.extend(y);
+                return x
+            }
+        }
+    }
+
     // Decide if `var` is free in `self`.
     fn is_free(&self, var: u8) -> bool {
         match self {
