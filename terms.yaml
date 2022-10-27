@@ -1,0 +1,35 @@
+Input:
+terms:
+  # Dot operator. Note: "." can only be placed with a blank space before it.
+  - term: (λz . (xx))
+  - term: ((λx . (xx))(λx . (xx)))
+  # No Outer Parenthesis with Dot Operator
+  - term: λz . (xx)
+  - term: λxyzu . (xx)
+  # End of No Outer Parenthesis with Dot Operator
+  # End of Dot operator
+  - term: (λa (λb (λc (x x))))
+  - term: ((λx (x * ((λx (x + ((λx x) 3))) 8))) 3)
+    evaluate: true
+  - term: ((λx ((λy (x * y)) 4)) 3)
+    evaluate: true
+    print_ast: true
+  - term: ((λx ((λy (x + y)) 8)) 100)
+    evaluate: true
+  - term: (((λx (λx (f x))) x) ((λx x) z))
+    reduce: true
+    reduce_steps: 2
+  - term: ((((λx (x y)) (λz (x z))) f) (g h))
+    reduce: true
+    reduce_steps: 2
+  - term: ((λx((λy((x+y)*y))3))4)
+    evaluate: true
+    print_ast: true
+  - term: (((ux)(yz))(λv(vy)))
+    print_ast: true
+  - term: ((((λx(λy(λz((xz)(yz)))))u)v)w)
+    print_ast: true
+  - term: (((w(λx(λy(λz((xz)(yz))))))u)v)
+    print_ast: true            
+  - term: ((λx(xx))(λx(xx)))
+    print_ast: true  
