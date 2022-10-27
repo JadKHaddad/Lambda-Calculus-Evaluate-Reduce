@@ -46,6 +46,24 @@ fn main() {
     println!("Sub: {}", sub.to_sub());
     let t = sub.create_term();
     println!("Term: {}", t);
+    println!("----------------------------");
+    let term = term::SParser::new().parse("((((λx (x y)) (λz (x z))) f) (g h))").unwrap();
+    let term_b_reduced = term.beta_reduce();
+    let term_bb_reduced = term_b_reduced.beta_reduce();
+    let term_bbb_reduced = term_bb_reduced.beta_reduce();
+    println!("Term: {}", term);
+    println!("Term Beta Reduced: {}", term_b_reduced);
+    println!("Term Beta Reduced: {}", term_bb_reduced);
+    println!("Term Beta Reduced: {}", term_bbb_reduced);
+    println!("----------------------------");
+    let mut term = term::SParser::new().parse("((((λx (x y)) (λz (x z))) f) (g h))").unwrap();
+    println!("Term: {}", term);
+    term.reduce();
+    println!("Term Beta Reduced: {}", term);
+    term.reduce();
+    println!("Term Beta Reduced: {}", term);
+    term.reduce();
+    println!("Term Beta Reduced: {}", term);
     std::process::exit(0);
 
 

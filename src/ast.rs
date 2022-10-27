@@ -140,6 +140,21 @@ impl Term {
         }
     }
 
+    pub fn beta_reduce(&self) -> Term {
+        match self {
+            Term::App(t1, t2) => match &**t1 {
+                Term::Abs(arg, body) => Sub {
+                    var: *arg,
+                    term1: *t2.clone(),
+                    term2: *body.clone(),
+                }
+                .create_term(),
+                _ => Term::App(Box::new(t1.beta_reduce()), Box::new(t2.beta_reduce())),
+            },
+            _ => self.clone(),
+        }
+    }
+
     fn eval<'a>(&'a self, values: &mut std::collections::HashMap<u8, &'a Term>) -> i32 {
         match self {
             Term::Constant(value) => *value,
@@ -191,20 +206,11 @@ impl Term {
 
 #[derive(Eq, PartialEq, Debug, Clone, Hash)]
 pub struct Sub {
+    //TODO: Only works witth vars. not constants
     pub var: u8,
     pub term1: Term,
     pub term2: Term,
 }
-
-// impl fmt::Display for Sub {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         write!(
-//             f,
-//             "Sub({}, {})[{}]",
-//             self.var as char, self.term1, self.term2
-//         )
-//     }
-// }
 
 impl Sub {
     pub fn create_term(&self) -> Term {
@@ -282,5 +288,4 @@ impl Sub {
     pub fn to_sub(&self) -> String {
         format!("{}[{} := {}]", self.term2, self.var as char, self.term1)
     }
-
 }
