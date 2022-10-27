@@ -42,7 +42,7 @@ fn main() {
         term1: *term::SParser::new().parse("(λx(λy x))").unwrap(),
         term2: *term::SParser::new().parse("(y(λx(yx)))").unwrap(),
     };
-    println!("Sub lisp: {}", sub.to_sub_lisp());
+    println!("Sub lisp: {}", sub.to_sub_lippe());
     println!("Sub: {}", sub.to_sub());
     let t = sub.create_term();
     println!("Term: {}", t);
@@ -58,6 +58,19 @@ fn main() {
     println!("----------------------------");
     let mut term = term::SParser::new().parse("((((λx (x y)) (λz (x z))) f) (g h))").unwrap();
     println!("Term: {}", term);
+    term.reduce();
+    println!("Term Beta Reduced: {}", term);
+    term.reduce();
+    println!("Term Beta Reduced: {}", term);
+    term.reduce();
+    println!("Term Beta Reduced: {}", term);
+    println!("----------------------------");
+    let mut term = term::SParser::new().parse("((λxyz . ((xz)y))(λxw. x))").unwrap();
+    println!("Term: {}", term);
+    println!("Term Beta Reduced: {}", term.beta_reduce());
+    println!("Term Beta Reduced: {}", term.beta_reduce().beta_reduce());
+    println!("Term Beta Reduced: {}", term.beta_reduce().beta_reduce().beta_reduce());
+    println!("----------------------------");
     term.reduce();
     println!("Term Beta Reduced: {}", term);
     term.reduce();

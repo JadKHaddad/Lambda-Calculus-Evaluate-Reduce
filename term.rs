@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: 142c6277f0b44d96f56b5b5992ba377aea70c81984fdd09adccf56418ccf39e3
+// sha3: 59358c29b26f290e882857ebcdd710bee45860e85b9e793d87a908d157eacb8b
 use std::str::FromStr;
 use ast::{Term, Op};
 #[allow(unused_extern_crates)]

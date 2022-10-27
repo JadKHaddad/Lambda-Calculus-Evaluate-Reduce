@@ -98,6 +98,10 @@ impl Term {
         bound_vars.contains(&Term::Var(var))
     }
 
+    fn contains_var(&self, var: u8) -> bool {
+        todo!();
+    }
+
     fn replace<'a>(&'a mut self, var: u8, subs: &Term) -> bool {
         match self {
             Term::Var(var2) => {
@@ -136,6 +140,9 @@ impl Term {
                     t2.reduce();
                 }
             },
+            Term::Abs(_, body) => {
+                body.reduce();
+            }
             _ => (),
         }
     }
@@ -151,6 +158,7 @@ impl Term {
                 .create_term(),
                 _ => Term::App(Box::new(t1.beta_reduce()), Box::new(t2.beta_reduce())),
             },
+            Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduce())),
             _ => self.clone(),
         }
     }
@@ -170,12 +178,10 @@ impl Term {
                     values.insert(*arg, t2);
                     body.eval(values)
                 }
-                //TODO: Term::App (is it possible to evaluate App(App,..)?
-                //Err
-                _ => panic!(),
+                _ => panic!(), //TODO: Throw error
             },
             //Err
-            _ => panic!(),
+            _ => panic!(), //TODO: Throw error
         }
     }
 
@@ -277,11 +283,11 @@ impl Sub {
                     )
                 }
             }
-            _ => panic!(),
+            _ => panic!(), //TODO: Throw error
         }
     }
 
-    pub fn to_sub_lisp(&self) -> String {
+    pub fn to_sub_lippe(&self) -> String {
         format!("Sub({}, {})[{}]", self.var as char, self.term1, self.term2)
     }
 

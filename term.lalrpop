@@ -3,6 +3,8 @@ use ast::{Term, Op};
 
 grammar;
 
+// TODO: Parse Sub
+
 // pub Term: Box<Term> = {
 //     "(" <t1:Term> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
 //     "(" <t1:Term> <op:TermOp> <t2:Term> ")" => Box::new(Term::BinOp(op, t1, t2)),
