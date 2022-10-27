@@ -42,7 +42,8 @@ fn main() {
         term1: *term::SParser::new().parse("(λx(λy x))").unwrap(),
         term2: *term::SParser::new().parse("(y(λx(yx)))").unwrap(),
     };
-    println!("Sub: {}", sub);
+    println!("Sub lisp: {}", sub.to_sub_lisp());
+    println!("Sub: {}", sub.to_sub());
     let t = sub.create_term();
     println!("Term: {}", t);
     std::process::exit(0);

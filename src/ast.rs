@@ -196,15 +196,15 @@ pub struct Sub {
     pub term2: Term,
 }
 
-impl fmt::Display for Sub {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Sub({}, {})[{}]",
-            self.var as char, self.term1, self.term2
-        )
-    }
-}
+// impl fmt::Display for Sub {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         write!(
+//             f,
+//             "Sub({}, {})[{}]",
+//             self.var as char, self.term1, self.term2
+//         )
+//     }
+// }
 
 impl Sub {
     pub fn create_term(&self) -> Term {
@@ -274,4 +274,13 @@ impl Sub {
             _ => panic!(),
         }
     }
+
+    pub fn to_sub_lisp(&self) -> String {
+        format!("Sub({}, {})[{}]", self.var as char, self.term1, self.term2)
+    }
+
+    pub fn to_sub(&self) -> String {
+        format!("{}[{} := {}]", self.term2, self.var as char, self.term1)
+    }
+
 }
