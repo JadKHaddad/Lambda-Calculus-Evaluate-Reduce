@@ -1,9 +1,63 @@
 use std::str::FromStr;
-use ast::{Term, Op};
+use ast::{Term, Op, Sub};
 
 grammar;
 
-// TODO: Parse Sub
+pub Sub: Sub = {
+    "Sub" "(" <v:Var> "," <t1:Term> ")" "[" <t2:Term> "]" => Sub { var:v, term1:*t1, term2:*t2 },
+    <t2:Term> "[" <v:Var> ":=" <t1:Term> "]" => Sub { var:v, term1:*t1, term2:*t2 },
+};
+
+pub Term: Box<Term> = {
+    <app:App> => app,
+    <abs:Abs> => abs,
+    <op:Op> => op,
+    <v:Var> => Box::new(Term::Var(v)),
+    <n:Num> => Box::new(Term::Constant(n)),
+    "(" <s:Sub> ")" => Box::new(s.create_term())
+}
+
+Op: Box<Term> = {
+    "(" <t1:Term> <op:TermOp> <t2:Term> ")" => Box::new(Term::BinOp(op, t1, t2)),
+}
+
+App: Box<Term> = {
+    "(" <t1:Term> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
+}
+
+Abs: Box<Term> = {
+    "(λ" <v:Var> <t1:Term> ")" => Box::new(Term::Abs(v, t1)),
+    "(λ" <vs:Vars> "." <t1:Term> ")" => {
+        Term::create_nested_abs(vs, t1)
+    },
+    "λ" <vs:Vars> "." <t1:Term> => {
+        Term::create_nested_abs(vs, t1)
+    }
+}
+
+Vars: Vec<u8> = {
+    <v:Var> <vs:Vars> => {
+        let mut vs = vs;
+        vs.push(v);
+        vs
+    },
+    <v:Var> => vec![v],
+}
+
+Var: u8 = {
+    <s:r"[a-z]"> => s.as_bytes()[0],
+}
+
+Num: i32 = {
+    <n:r"[0-9]+"> => i32::from_str(n).unwrap(),
+}
+
+TermOp: Op = {
+    "*" => Op::Mul,
+    "/" => Op::Div,
+    "+" => Op::Add,
+    "-" => Op::Sub,
+}
 
 // pub Term: Box<Term> = {
 //     "(" <t1:Term> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
@@ -21,53 +75,3 @@ grammar;
 //     <s:r"[a-z]"> => Box::new(Term::Var(s.as_bytes()[0])),
 //     <n:r"[0-9]+"> => Box::new(Term::Constant(i32::from_str(n).unwrap())),
 // }
-
-pub S: Box<Term> = {
-    <app:App> => app,
-    <abs:Abs> => abs,
-    <op:Op> => op,
-    <v:V> => Box::new(Term::Var(v)),
-    <c:C> => Box::new(Term::Constant(c)),
-}
-
-Op: Box<Term> = {
-    "(" <t1:S> <op:TermOp> <t2:S> ")" => Box::new(Term::BinOp(op, t1, t2)),
-}
-
-App: Box<Term> = {
-    "(" <t1:S> <t2:S> ")" => Box::new(Term::App(t1, t2)),
-}
-
-Abs: Box<Term> = {
-    "(λ" <v:V> <t1:S> ")" => Box::new(Term::Abs(v, t1)),
-    "(λ" <vs:Vs> "." <t1:S> ")" => {
-        Term::create_nested_abs(vs, t1)
-    },
-    "λ" <vs:Vs> "." <t1:S> => {
-        Term::create_nested_abs(vs, t1)
-    }
-}
-
-Vs: Vec<u8> = {
-    <v:V> <vs:Vs> => {
-        let mut vs = vs;
-        vs.push(v);
-        vs
-    },
-    <v:V> => vec![v],
-}
-
-V: u8 = {
-    <s:r"[a-z]"> => s.as_bytes()[0],
-}
-
-C: i32 = {
-    <n:r"[0-9]+"> => i32::from_str(n).unwrap(),
-}
-
-TermOp: Op = {
-    "*" => Op::Mul,
-    "/" => Op::Div,
-    "+" => Op::Add,
-    "-" => Op::Sub,
-}

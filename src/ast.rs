@@ -6,7 +6,7 @@ pub enum Term {
     Constant(i32),
     BinOp(Op, Box<Term>, Box<Term>),
     Var(u8),
-    Abs(u8 /*var*/, Box<Term>),
+    Abs(u8 /*arg*/, Box<Term>),
     App(Box<Term> /*func*/, Box<Term> /*arg*/),
 }
 
@@ -85,21 +85,27 @@ impl Term {
         }
     }
 
-    // Decide if `var` is free in `self`.
+    // Decides if `var` is free in `self`.
     fn is_free(&self, var: u8) -> bool {
         let free_vars = self.get_free_vars();
         free_vars.contains(&Term::Var(var))
     }
 
-    // Decide if `var` is bound in `self`.
+    // Decides if `var` is bound in `self`.
     #[allow(dead_code)]
     fn is_bound(&self, var: u8) -> bool {
         let bound_vars = self.get_bound_vars();
         bound_vars.contains(&Term::Var(var))
     }
 
+    #[allow(dead_code)]
     fn contains_var(&self, var: u8) -> bool {
-        todo!();
+        match self {
+            Term::Var(v) => *v == var,
+            Term::Abs(arg, body) => *arg == var || body.contains_var(var),
+            Term::App(t1, t2) => t1.contains_var(var) || t2.contains_var(var),
+            _ => false,
+        }
     }
 
     fn replace<'a>(&'a mut self, var: u8, subs: &Term) -> bool {
@@ -125,7 +131,7 @@ impl Term {
         }
     }
 
-    // Reduce `self` if possible.
+    // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
     pub fn reduce(&mut self) {
         match self {
             // beta-reduction
@@ -147,6 +153,7 @@ impl Term {
         }
     }
 
+    // Creates a reduced `Term` if possible. Performs beta reduction using substitution.
     pub fn beta_reduce(&self) -> Term {
         match self {
             Term::App(t1, t2) => match &**t1 {
