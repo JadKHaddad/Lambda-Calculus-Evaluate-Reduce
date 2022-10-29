@@ -227,6 +227,7 @@ pub struct Sub {
 
 impl Sub {
     pub fn create_term(&self) -> Term {
+        let lippe = true; //TODO: Make this a parameter
         match &self.term2 {
             Term::Var(var) => {
                 if var == &self.var {
@@ -257,9 +258,40 @@ impl Sub {
             Term::Abs(arg, body) => {
                 if arg == &self.var {
                     self.term2.clone()
-                } else if !self.term1.get_free_vars().contains(&Term::Var(arg.clone()))
-                    || !body.get_free_vars().contains(&Term::Var(self.var))
-                {
+                } else if lippe {
+                    if !self.term1.get_free_vars().contains(&Term::Var(arg.clone()))
+                    || !body.get_free_vars().contains(&Term::Var(self.var)){
+                        Term::Abs(
+                            arg.clone(),
+                            Box::new(
+                                Sub {
+                                    var: self.var,
+                                    term1: self.term1.clone(),
+                                    term2: body.as_ref().clone(),
+                                }
+                                .create_term(),
+                            ),
+                        )
+                    }else{
+                        Term::Abs(
+                            b'q', //TODO: find a new variable
+                            Box::new(
+                                Sub {
+                                    var: self.var,
+                                    term1: self.term1.clone(),
+                                    term2: Sub {
+                                        var: *arg,
+                                        term1: Term::Var(b'q'), //TODO: find a new variable
+                                        term2: body.as_ref().clone(),
+                                    }
+                                    .create_term(),
+                                }
+                                .create_term(),
+                            ),
+                        )
+                    }
+                }
+                else {
                     Term::Abs(
                         arg.clone(),
                         Box::new(
@@ -267,23 +299,6 @@ impl Sub {
                                 var: self.var,
                                 term1: self.term1.clone(),
                                 term2: body.as_ref().clone(),
-                            }
-                            .create_term(),
-                        ),
-                    )
-                } else {
-                    Term::Abs(
-                        b'z', //TODO: find a new variable
-                        Box::new(
-                            Sub {
-                                var: self.var,
-                                term1: self.term1.clone(),
-                                term2: Sub {
-                                    var: *arg,
-                                    term1: Term::Var(b'z'), //TODO: find a new variable
-                                    term2: body.as_ref().clone(),
-                                }
-                                .create_term(),
                             }
                             .create_term(),
                         ),
