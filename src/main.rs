@@ -26,7 +26,7 @@ struct InputTerm {
 }
 
 fn main() {
-    let input = fs::read_to_string("terms.yaml").expect("Unable to read file");
+    let input = fs::read_to_string("test.yaml").expect("Unable to read file");
     let terms: Vec<InputTerm> = serde_yaml::from_str(&input).expect("Unable to parse YAML");
     for input_term in terms {
         println!("----------------------------");
@@ -44,11 +44,11 @@ fn main() {
         if input_term.reduce.unwrap_or(false) {
             if let Some(reduce_steps) = input_term.reduce_steps {
                 for _ in 0..reduce_steps {
-                    term.reduce();
+                    term.beta_reduction_();
                     println!("Reduced: [ {} ]", term);
                 }
             } else {
-                term.reduce();
+                term.beta_reduction_();
                 println!("Reduced: [ {} ]", term);
             }
         }

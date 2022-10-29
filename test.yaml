@@ -41,3 +41,6 @@
 - term: ((λzxy . ((zx)y))(λxy . x))
   reduce: true
   reduce_steps: 3
+- term: (((λxyz . ((xz)(yz)))(λxy . x))(λuv . u))
+  reduce: true
+  reduce_steps: 4

@@ -132,7 +132,8 @@ impl Term {
     }
 
     // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
-    pub fn reduce(&mut self) {
+    // ((λx M)N) = M[x:=N] (β-Reduction)
+    pub fn beta_reduction_(&mut self) {
         match self {
             // beta-reduction
             Term::App(t1, t2) => match &mut **t1 {
@@ -142,19 +143,20 @@ impl Term {
                     }
                 }
                 _ => {
-                    t1.reduce();
-                    t2.reduce();
+                    t1.beta_reduction_();
+                    t2.beta_reduction_();
                 }
             },
             Term::Abs(_, body) => {
-                body.reduce();
+                body.beta_reduction_();
             }
             _ => (),
         }
     }
 
     // Creates a reduced `Term` if possible. Performs beta reduction using substitution.
-    pub fn beta_reduce(&self) -> Term {
+    // ((λx M)N) = M[x:=N] (β-Reduction)
+    pub fn beta_reduction(&self) -> Term {
         match self {
             Term::App(t1, t2) => match &**t1 {
                 Term::Abs(arg, body) => Sub {
@@ -163,11 +165,16 @@ impl Term {
                     term2: *body.clone(),
                 }
                 .create_term(),
-                _ => Term::App(Box::new(t1.beta_reduce()), Box::new(t2.beta_reduce())),
+                _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
             },
-            Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduce())),
+            Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
             _ => self.clone(),
         }
+    }
+
+    //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
+    pub fn alpha_conversion(&self, var: u8) -> Term {
+        todo!()
     }
 
     fn eval<'a>(&'a self, values: &mut std::collections::HashMap<u8, &'a Term>) -> i32 {
@@ -205,8 +212,9 @@ impl Term {
     }
 
     // Decide if `var` is free in `self`.
+    #[allow(dead_code)]
     #[deprecated(note = "use `is_free` instead")]
-    fn _is_free(&self, var: u8) -> bool {
+    fn is_free_(&self, var: u8) -> bool {
         match self {
             Term::Var(var2) => var == *var2,
             Term::Abs(arg, body) => (var != *arg) && body.is_free(var),
