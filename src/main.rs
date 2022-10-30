@@ -26,11 +26,17 @@ struct InputTerm {
 }
 
 fn main() {
+    let term = term::TermsParser::new().parse("abc(ses)").unwrap();
+    println!("{}", term);
+    let term = term::TermsParser::new().parse("a(λz . ((λxsss . abc(ses)saeq(sw))z))a").unwrap();
+    println!("{}", term);
+    std::process::exit(0);
+
     let input = fs::read_to_string("test.yaml").expect("Unable to read file");
     let terms: Vec<InputTerm> = serde_yaml::from_str(&input).expect("Unable to parse YAML");
     for input_term in terms {
         println!("----------------------------");
-        let mut term = term::TermParser::new()
+        let mut term = term::TermsParser::new()
             .parse(&input_term.term)
             .expect(&format!("Unable to parse term: [{}]", input_term.term));
         println!("Term: [ {} ]", term);

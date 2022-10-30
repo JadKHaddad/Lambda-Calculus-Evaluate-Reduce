@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use ast::{Term, Op, Sub};
+use crate::ast::{Term, Op, Sub};
 
 grammar;
 
@@ -7,6 +7,13 @@ pub Sub: Sub = {
     "Sub" "(" <v:Var> "," <t1:Term> ")" "[" <t2:Term> "]" => Sub { var:v, term1:*t1, term2:*t2 },
     <t2:Term> "[" <v:Var> ":=" <t1:Term> "]" => Sub { var:v, term1:*t1, term2:*t2 },
 };
+
+pub Terms: Box<Term> = {
+    <ts:Terms> <t:Term> => {
+        Box::new(Term::App(ts, t))
+    },
+    <t:Term> => t
+}
 
 pub Term: Box<Term> = {
     <app:App> => app,
@@ -22,17 +29,17 @@ Op: Box<Term> = {
 }
 
 App: Box<Term> = {
-    "(" <t1:Term> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
+    "(" <t1:Terms> <t2:Term> ")" => Box::new(Term::App(t1, t2)),
 }
 
 Abs: Box<Term> = {
-    "(λ" <v:Var> <t1:Term> ")" => Box::new(Term::Abs(v, t1)),
-    "(λ" <vs:Vars> "." <t1:Term> ")" => {
+    "(" "λ" <v:Var> <t1:Term> ")" => Box::new(Term::Abs(v, t1)),
+    "(" "λ" <vs:Vars> "." <t1:Terms> ")" => {
         Term::create_nested_abs(vs, t1)
     },
-    "λ" <vs:Vars> "." <t1:Term> => {
-        Term::create_nested_abs(vs, t1)
-    }
+    // "λ" <vs:Vars> "." <t1:Terms> => {
+    //     Term::create_nested_abs(vs, t1)
+    // }
 }
 
 Vars: Vec<u8> = {
