@@ -1,8 +1,3 @@
-/*
-Will parse every Lambda-calculus term as long as it is (right) parenthesized.
-Not-Parenthesized terms are only allowed as an abstraction with the Dot operator. e.g. [λx . x], [λx . (λy . (x y))]
-Summery: Not-Parenthesized terms and Dot operator are not well supported.
-*/
 use serde::{Deserialize, Serialize};
 use std::fs;
 pub mod ast;
