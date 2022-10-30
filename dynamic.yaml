@@ -1,0 +1,18 @@
+- term: Sub(y, (λx(λy x)))[(y(λx(yx)))]
+- term: (λy (x(λx x)))[x:= (λz (zy))]
+- term: (Sub(y, (λx(λy x)))[(y(λx(yx)))])
+- term: ((λy (x(λx x)))[x:= (λz (zy))])
+- term: ux(yz)(λv . vy)
+- term: (λxyz . xz(yz))uvw
+- term: w(λxyz . xz(yz))zuv
+- term: w(λxyz . xz(yz))uv
+- term: ( Sub(x, (λz . zy))[(λy . x(λx . x))] )
+- term: ( (λy . x(λx . x))[x := (λz . zy)] )
+- term: ( (y(λv . xv))[x := (λy . vy)] )
+- term: (λxyz . uxv)(λxy . vxu)
+- term: (λxyz . uyv)(λuv . vu)
+- term: (λxyz . uxyv)(λuv . vu)
+- term: (λxyz . uzv)(λxy . vuz)
+- term: (λx . (xy))z
+- term: (λz . (λx . xy)z)
+- term: (λzxy . zxy)(λxy . x)

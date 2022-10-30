@@ -235,7 +235,7 @@ pub struct Sub {
 
 impl Sub {
     pub fn create_term(&self) -> Term {
-        let lippe = true; //TODO: Make this a parameter
+        let lippe = false; //TODO: Make this a parameter
         match &self.term2 {
             Term::Var(var) => {
                 if var == &self.var {

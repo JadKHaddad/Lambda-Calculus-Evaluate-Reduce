@@ -1,10 +1,6 @@
 # Dot operator. Note: `.` can only be placed with a blank space before it.
 - term: (λz . (xx))
 - term: ((λx . (xx))(λx . (xx)))
-# No Outer Parenthesis with Dot Operator
-- term: λz . (xx)
-- term: λxyzu . (xx)
-# End of `No Outer Parenthesis with Dot Operator`
 # End of `Dot operator`
 
 - term: (λa (λb (λc (x x))))
@@ -54,3 +50,52 @@
 - term: (Sub(y, (λx(λy x)))[(y(λx(yx)))])
 - term: ((y (λx (y x)))[y := (λx (λy x))])
 # End of `Substitutions as lambda terms`
+
+- term: (λy (λx ((xy)z)))
+- term: ( (λy (λx ((xy)z)))[x:= (uv)] )
+- term: ( (λy (λx ((xy)z)))[z:= (uv)] )
+- term: ( (λy (λx ((xy)z)))[z:= (yv)] )
+- term: ((λz(λx z))(yv))
+  reduce: true
+- term: ( (λx z)[z:=(yv)])
+- term: ((u(λz(λx z)))(yv))
+  reduce: true
+- term: (((ux)(yz))(λv(vy)))
+  print_free_variables: true
+  print_bound_variables: true
+- term: ((((λx(λy(λz((xz)(yz)))))u)v)w)
+  print_free_variables: true
+  print_bound_variables: true
+- term: ((((w(λx(λy(λz((xz)(yz))))))z)u)v)
+  print_free_variables: true
+  print_bound_variables: true
+- term: ( Sub(x, (λz (zy)))[(λy (x(λx x)))] )
+- term: ( (λy (x(λx x)))[x:= (λz (zy))] )
+- term: ( (y(λv (xv)))[x:= (λy (vy))] )
+- term: (λxyz . ((ux)(v(λxy . ((vx)u)))))
+  print_free_variables: true
+  print_bound_variables: true
+- term: (λxyz . ((uy)(v(λuv . (vu)))))
+  print_free_variables: true
+  print_bound_variables: true
+- term: ( (λxyz . (((ux)y)v) ) (λuv . (vu)) )
+  print_free_variables: true
+  print_bound_variables: true
+- term: ( (λxyz . ((uz)v))(λxy . ((vu)z)))
+  print_free_variables: true
+  print_bound_variables: true
+- term: ((λx . (xy))z)
+  reduce: true
+- term: (λz ((λx (xy))z)) 
+  reduce: true
+- term: (λu.(zy))
+  reduce: true
+- term: (λxy . x)
+- term: ((λzxy . ((zx)y))(λxy . x))
+  reduce: true
+  reduce_steps: 3
+- term: (((λxyz . ((xz)(yz)))(λxy . x))(λuv . u))
+  reduce: true
+  reduce_steps: 4
+- term: abc(ses)
+- term: a(λz . ((λxsss . abc(ses)saeq(sw))z))a

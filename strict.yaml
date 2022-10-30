@@ -1,0 +1,2 @@
+- term: Sub(y, (λx(λy x)))[(y(λx(yx)))]
+- term: (λy (x(λx x)))[x:= (λz (zy))]

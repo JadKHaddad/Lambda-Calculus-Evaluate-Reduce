@@ -3,9 +3,24 @@ use crate::ast::{Term, Op, Sub};
 
 grammar;
 
+// The Strict parser will only accept right parentized expressions
+pub Strict: Box<Term> = {
+    "(" <t1:Strict> <op:TermOp> <t2:Strict> ")" => Box::new(Term::BinOp(op, t1, t2)),
+    "(" <t1:Strict> <t2:Strict> ")" => Box::new(Term::App(t1, t2)),
+    "(" "λ" <v:Var> <t1:Strict> ")" => Box::new(Term::Abs(v, t1)),
+    <v:Var> => Box::new(Term::Var(v)),
+    <n:Num> => Box::new(Term::Constant(n)),
+    <s:StrictSub> => Box::new(s.create_term())
+}
+
+pub StrictSub: Sub = {
+    "Sub" "(" <v:Var> "," <t1:Strict> ")" "[" <t2:Strict> "]" => Sub { var:v, term1:*t1, term2:*t2 },
+    <t2:Strict> "[" <v:Var> ":=" <t1:Strict> "]" => Sub { var:v, term1:*t1, term2:*t2 },
+}
+
 pub Sub: Sub = {
-    "Sub" "(" <v:Var> "," <t1:Term> ")" "[" <t2:Term> "]" => Sub { var:v, term1:*t1, term2:*t2 },
-    <t2:Term> "[" <v:Var> ":=" <t1:Term> "]" => Sub { var:v, term1:*t1, term2:*t2 },
+    "Sub" "(" <v:Var> "," <t1:Terms> ")" "[" <t2:Terms> "]" => Sub { var:v, term1:*t1, term2:*t2 },
+    <t2:Terms> "[" <v:Var> ":=" <t1:Terms> "]" => Sub { var:v, term1:*t1, term2:*t2 },
 };
 
 pub Terms: Box<Term> = {
@@ -15,7 +30,7 @@ pub Terms: Box<Term> = {
     <t:Term> => t
 }
 
-pub Term: Box<Term> = {
+Term: Box<Term> = {
     <app:App> => app,
     <abs:Abs> => abs,
     <op:Op> => op,
