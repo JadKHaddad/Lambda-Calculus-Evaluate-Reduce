@@ -9,8 +9,6 @@ struct InputTerm {
     #[serde(skip_serializing_if = "Option::is_none")]
     print_ast: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    evaluate: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     reduce: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     reduce_steps: Option<u32>,
@@ -53,9 +51,6 @@ fn main() {
             println!("Term: [ {} ]", term);
             if input_term.print_ast.unwrap_or(false) {
                 println!("AST: {:?}", term);
-            }
-            if input_term.evaluate.unwrap_or(false) {
-                println!("Evaluated: [ {:?} ]", term.evaluate());
             }
             if input_term.reduce.unwrap_or(false) {
                 if let Some(reduce_steps) = input_term.reduce_steps {

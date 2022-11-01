@@ -5,12 +5,15 @@
 
 - term: (λa (λb (λc (x x))))
 - term: ((λx (x * ((λx (x + ((λx x) 3))) 8))) 3)
-  evaluate: true
+  reduce: true
+  reduce_steps: 3
 - term: ((λx ((λy (x * y)) 4)) 3)
-  evaluate: true
+  reduce: true
+  reduce_steps: 3
   print_ast: true
 - term: ((λx ((λy (x + y)) 8)) 100)
-  evaluate: true
+  reduce: true
+  reduce_steps: 3
 - term: (((λx (λx (f x))) x) ((λx x) z))
   reduce: true
   reduce_steps: 2
@@ -21,7 +24,8 @@
   reduce: true
   reduce_steps: 3
 - term: ((λx((λy((x+y)*y))3))4)
-  evaluate: true
+  reduce: true
+  reduce_steps: 3
   print_ast: true
 - term: (((ux)(yz))(λv(vy)))
   print_ast: true

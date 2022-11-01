@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 use std::fmt;
-use std::ops;
 
 #[derive(Eq, PartialEq, Debug, Clone, Hash)]
 pub enum Term {
@@ -28,70 +27,6 @@ impl fmt::Display for Term {
             Term::Abs(var, term) => write!(f, "(λ{} {})", *var as char, term),
             Term::App(t1, t2) => write!(f, "({} {})", t1, t2),
             Term::BinOp(op, t1, t2) => write!(f, "({} {} {})", t1, op, t2),
-        }
-    }
-}
-
-impl ops::Add for Term {
-    type Output = Self;
-    fn add(self, other: Self) -> Self {
-        match self {
-            Term::Constant(value) => {
-                if let Term::Constant(other_value) = other {
-                    Term::Constant(value + other_value)
-                } else {
-                    panic!()
-                }
-            },
-            _ => panic!()
-        }
-    }
-}
-
-impl ops::Sub for Term {
-    type Output = Self;
-    fn sub(self, other: Self) -> Self {
-        match self {
-            Term::Constant(value) => {
-                if let Term::Constant(other_value) = other {
-                    Term::Constant(value - other_value)
-                } else {
-                    panic!()
-                }
-            },
-            _ => panic!()
-        }
-    }
-}
-
-impl ops::Mul for Term {
-    type Output = Self;
-    fn mul(self, other: Self) -> Self {
-        match self {
-            Term::Constant(value) => {
-                if let Term::Constant(other_value) = other {
-                    Term::Constant(value * other_value)
-                } else {
-                    panic!()
-                }
-            },
-            _ => panic!()
-        }
-    }
-}
-
-impl ops::Div for Term {
-    type Output = Self;
-    fn div(self, other: Self) -> Self {
-        match self {
-            Term::Constant(value) => {
-                if let Term::Constant(other_value) = other {
-                    Term::Constant(value / other_value)
-                } else {
-                    panic!()
-                }
-            },
-            _ => panic!()
         }
     }
 }
@@ -290,8 +225,7 @@ impl Term {
                         },
                         _ => *self = Term::cond_1()
                     }
-                },
-                _ => (),
+                }
             },
             _ => (),
         }
@@ -319,49 +253,6 @@ impl Term {
     //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
     pub fn alpha_conversion(&self, var: u8) -> Term {
         todo!()
-    }
-
-    fn eval<'a>(&'a self, values: &mut std::collections::HashMap<u8, &'a Term>) -> Term {
-        match self {
-            Term::Constant(_) => self.clone(),
-            Term::Var(var) => values[&var].eval(values),
-            Term::BinOp(op, t1, t2) => match op {
-                Op::Add => t1.eval(values) + t2.eval(values),
-                Op::Sub => t1.eval(values) - t2.eval(values),
-                Op::Mul => t1.eval(values) * t2.eval(values),
-                Op::Div => t1.eval(values) / t2.eval(values),
-                Op::Eq => {
-                    match **t1 {
-                        Term::Constant(val1) => {
-                            match **t2 {
-                                Term::Constant(val2) => {
-                                    if val1 == val2 {
-                                        Term::cond_0()
-                                    }else{
-                                        Term::cond_1()
-                                    }
-                                }
-                                _ => Term::cond_1()
-                            }
-                        },
-                        _ => Term::cond_1()
-                    }
-                },
-            },
-            Term::App(t1, t2) => match &**t1 {
-                Term::Abs(arg, body) => {
-                    values.insert(*arg, t2);
-                    body.eval(values)
-                }
-                _ => panic!(), //TODO: Throw error
-            },
-            //Err
-            _ => panic!(), //TODO: Throw error
-        }
-    }
-
-    pub fn evaluate(&self) -> Term {
-        self.eval(&mut std::collections::HashMap::new())
     }
 
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
