@@ -199,8 +199,8 @@ impl Term {
                         }
                     }
                     Op::Eq => {
-                        // t1.beta_reduction_(); //TODO!
-                        // t2.beta_reduction_(); //TODO!
+                        t1.beta_reduction_();
+                        t2.beta_reduction_();
                         match **t1 {
                             Term::Constant(val1) => match **t2 {
                                 Term::Constant(val2) => {
