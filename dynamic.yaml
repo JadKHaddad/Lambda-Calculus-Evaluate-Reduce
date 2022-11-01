@@ -16,3 +16,29 @@
 - term: (λx . (xy))z
 - term: (λz . (λx . xy)z)
 - term: (λzxy . zxy)(λxy . x)
+- term: (λxy . x)(λx . x)
+  reduce: true
+- term: xyx((λxy . x)(λx . x))
+  reduce: true
+- term: (λxy . x) (λx . x) ((λx . xx)(λx . xx))
+  reduce: true
+  reduce_steps: 2
+  # recursive
+- term: (λf . ((λx . f(xx)) (λx . f(xx)))) a
+  reduce: true
+  reduce_steps: 5
+
+- term: (λf((λx(f(xx)))(λx(f(xx))))) 1
+  reduce: true
+  reduce_steps: 7
+
+- term: ((λx((λy((x+y)*y))3))4)
+  evaluate: true
+  reduce: true
+  reduce_steps: 2
+- term: (λx (0=x)) 1
+  reduce: true
+  reduce_steps: 2
+- term:  ( (λf(λx(((0=x)1)(x*(f(x-1)))))) ( (λf((λx(f(xx)))(λx(f(xx))))) (λf(λx(((0=x)1)(x*(f(x-1)))))) ) ) 5
+  reduce: true
+  reduce_steps: 40

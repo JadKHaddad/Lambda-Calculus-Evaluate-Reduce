@@ -79,6 +79,7 @@ TermOp: Op = {
     "/" => Op::Div,
     "+" => Op::Add,
     "-" => Op::Sub,
+    "=" => Op::Eq,
 }
 
 // pub Term: Box<Term> = {

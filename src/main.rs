@@ -55,7 +55,7 @@ fn main() {
                 println!("AST: {:?}", term);
             }
             if input_term.evaluate.unwrap_or(false) {
-                println!("Evaluated: [ {} ]", term.evaluate());
+                println!("Evaluated: [ {:?} ]", term.evaluate());
             }
             if input_term.reduce.unwrap_or(false) {
                 if let Some(reduce_steps) = input_term.reduce_steps {

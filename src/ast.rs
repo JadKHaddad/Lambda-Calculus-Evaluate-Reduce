@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fmt;
+use std::ops;
 
 #[derive(Eq, PartialEq, Debug, Clone, Hash)]
 pub enum Term {
@@ -16,6 +17,7 @@ pub enum Op {
     Sub,
     Mul,
     Div,
+    Eq,
 }
 
 impl fmt::Display for Term {
@@ -30,6 +32,70 @@ impl fmt::Display for Term {
     }
 }
 
+impl ops::Add for Term {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        match self {
+            Term::Constant(value) => {
+                if let Term::Constant(other_value) = other {
+                    Term::Constant(value + other_value)
+                } else {
+                    panic!()
+                }
+            },
+            _ => panic!()
+        }
+    }
+}
+
+impl ops::Sub for Term {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self {
+        match self {
+            Term::Constant(value) => {
+                if let Term::Constant(other_value) = other {
+                    Term::Constant(value - other_value)
+                } else {
+                    panic!()
+                }
+            },
+            _ => panic!()
+        }
+    }
+}
+
+impl ops::Mul for Term {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self {
+        match self {
+            Term::Constant(value) => {
+                if let Term::Constant(other_value) = other {
+                    Term::Constant(value * other_value)
+                } else {
+                    panic!()
+                }
+            },
+            _ => panic!()
+        }
+    }
+}
+
+impl ops::Div for Term {
+    type Output = Self;
+    fn div(self, other: Self) -> Self {
+        match self {
+            Term::Constant(value) => {
+                if let Term::Constant(other_value) = other {
+                    Term::Constant(value / other_value)
+                } else {
+                    panic!()
+                }
+            },
+            _ => panic!()
+        }
+    }
+}
+
 impl fmt::Display for Op {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -37,11 +103,32 @@ impl fmt::Display for Op {
             Op::Sub => write!(f, "{}", '-'),
             Op::Mul => write!(f, "{}", '*'),
             Op::Div => write!(f, "{}", '/'),
+            Op::Eq => write!(f, "{}", '='),
         }
     }
 }
 
 impl Term {
+    pub fn cond_0() -> Self {
+        Term::Abs(
+            b'x',
+            Box::new(Term::Abs(
+                b'y',
+                Box::new(Term::Var(b'x')),
+            )),
+        )
+    }
+
+    pub fn cond_1() -> Self {
+        Term::Abs(
+            b'x',
+            Box::new(Term::Abs(
+                b'y',
+                Box::new(Term::Var(b'y')),
+            )),
+        )
+    }
+
     pub fn get_bound_vars(&self) -> HashSet<Term> {
         match self {
             Term::Abs(arg, body) => {
@@ -127,7 +214,7 @@ impl Term {
             }
             Term::App(t1, t2) => t1.replace(var, subs) && t2.replace(var, subs),
             Term::Constant(_) => true,
-            _ => false,
+            Term::BinOp(_, t1, t2) => t1.replace(var, subs) && t2.replace(var, subs),
         }
     }
 
@@ -149,7 +236,63 @@ impl Term {
             },
             Term::Abs(_, body) => {
                 body.beta_reduction_();
-            }
+            },
+            Term::BinOp(op, t1, t2) => match op {
+                Op::Add => {
+                    t1.beta_reduction_();
+                    t2.beta_reduction_();
+                    if let Term::Constant(c1) = **t1 {
+                        if let Term::Constant(c2) = **t2 {
+                            *self = Term::Constant(c1 + c2);
+                        }
+                    }
+                },
+                Op::Sub => {
+                    t1.beta_reduction_();
+                    t2.beta_reduction_();
+                    if let Term::Constant(c1) = **t1 {
+                        if let Term::Constant(c2) = **t2 {
+                            *self = Term::Constant(c1 - c2);
+                        }
+                    }
+                },
+                Op::Mul => {
+                    t1.beta_reduction_();
+                    t2.beta_reduction_();
+                    if let Term::Constant(c1) = **t1 {
+                        if let Term::Constant(c2) = **t2 {
+                            *self = Term::Constant(c1 * c2);
+                        }
+                    }
+                },
+                Op::Div => {
+                    t1.beta_reduction_();
+                    t2.beta_reduction_();
+                    if let Term::Constant(c1) = **t1 {
+                        if let Term::Constant(c2) = **t2 {
+                            *self = Term::Constant(c1 / c2);
+                        }
+                    }
+                },
+                Op::Eq => {
+                    match **t1 {
+                        Term::Constant(val1) => {
+                            match **t2 {
+                                Term::Constant(val2) => {
+                                    if val1 == val2 {
+                                        *self = Term::cond_0()
+                                    }else{
+                                        *self = Term::cond_1()
+                                    }
+                                }
+                                _ => *self = Term::cond_1()
+                            }
+                        },
+                        _ => *self = Term::cond_1()
+                    }
+                },
+                _ => (),
+            },
             _ => (),
         }
     }
@@ -168,6 +311,7 @@ impl Term {
                 _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
             },
             Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
+            
             _ => self.clone(),
         }
     }
@@ -177,15 +321,32 @@ impl Term {
         todo!()
     }
 
-    fn eval<'a>(&'a self, values: &mut std::collections::HashMap<u8, &'a Term>) -> i32 {
+    fn eval<'a>(&'a self, values: &mut std::collections::HashMap<u8, &'a Term>) -> Term {
         match self {
-            Term::Constant(value) => *value,
+            Term::Constant(_) => self.clone(),
             Term::Var(var) => values[&var].eval(values),
             Term::BinOp(op, t1, t2) => match op {
                 Op::Add => t1.eval(values) + t2.eval(values),
                 Op::Sub => t1.eval(values) - t2.eval(values),
                 Op::Mul => t1.eval(values) * t2.eval(values),
                 Op::Div => t1.eval(values) / t2.eval(values),
+                Op::Eq => {
+                    match **t1 {
+                        Term::Constant(val1) => {
+                            match **t2 {
+                                Term::Constant(val2) => {
+                                    if val1 == val2 {
+                                        Term::cond_0()
+                                    }else{
+                                        Term::cond_1()
+                                    }
+                                }
+                                _ => Term::cond_1()
+                            }
+                        },
+                        _ => Term::cond_1()
+                    }
+                },
             },
             Term::App(t1, t2) => match &**t1 {
                 Term::Abs(arg, body) => {
@@ -199,7 +360,7 @@ impl Term {
         }
     }
 
-    pub fn evaluate(&self) -> i32 {
+    pub fn evaluate(&self) -> Term {
         self.eval(&mut std::collections::HashMap::new())
     }
 
