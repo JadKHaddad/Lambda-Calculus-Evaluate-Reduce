@@ -45,23 +45,11 @@ impl fmt::Display for Op {
 
 impl Term {
     pub fn cond_0() -> Self {
-        Term::Abs(
-            b'x',
-            Box::new(Term::Abs(
-                b'y',
-                Box::new(Term::Var(b'x')),
-            )),
-        )
+        Term::Abs(b'x', Box::new(Term::Abs(b'y', Box::new(Term::Var(b'x')))))
     }
 
     pub fn cond_1() -> Self {
-        Term::Abs(
-            b'x',
-            Box::new(Term::Abs(
-                b'y',
-                Box::new(Term::Var(b'y')),
-            )),
-        )
+        Term::Abs(b'x', Box::new(Term::Abs(b'y', Box::new(Term::Var(b'y')))))
     }
 
     pub fn get_bound_vars(&self) -> HashSet<Term> {
@@ -171,62 +159,64 @@ impl Term {
             },
             Term::Abs(_, body) => {
                 body.beta_reduction_();
-            },
-            Term::BinOp(op, t1, t2) => match op {
-                Op::Add => {
-                    t1.beta_reduction_();
-                    t2.beta_reduction_();
-                    if let Term::Constant(c1) = **t1 {
-                        if let Term::Constant(c2) = **t2 {
-                            *self = Term::Constant(c1 + c2);
+            }
+            Term::BinOp(op, t1, t2) => {
+                match op {
+                    Op::Add => {
+                        t1.beta_reduction_();
+                        t2.beta_reduction_();
+                        if let Term::Constant(c1) = **t1 {
+                            if let Term::Constant(c2) = **t2 {
+                                *self = Term::Constant(c1 + c2);
+                            }
                         }
                     }
-                },
-                Op::Sub => {
-                    t1.beta_reduction_();
-                    t2.beta_reduction_();
-                    if let Term::Constant(c1) = **t1 {
-                        if let Term::Constant(c2) = **t2 {
-                            *self = Term::Constant(c1 - c2);
+                    Op::Sub => {
+                        t1.beta_reduction_();
+                        t2.beta_reduction_();
+                        if let Term::Constant(c1) = **t1 {
+                            if let Term::Constant(c2) = **t2 {
+                                *self = Term::Constant(c1 - c2);
+                            }
                         }
                     }
-                },
-                Op::Mul => {
-                    t1.beta_reduction_();
-                    t2.beta_reduction_();
-                    if let Term::Constant(c1) = **t1 {
-                        if let Term::Constant(c2) = **t2 {
-                            *self = Term::Constant(c1 * c2);
+                    Op::Mul => {
+                        t1.beta_reduction_();
+                        t2.beta_reduction_();
+                        if let Term::Constant(c1) = **t1 {
+                            if let Term::Constant(c2) = **t2 {
+                                *self = Term::Constant(c1 * c2);
+                            }
                         }
                     }
-                },
-                Op::Div => {
-                    t1.beta_reduction_();
-                    t2.beta_reduction_();
-                    if let Term::Constant(c1) = **t1 {
-                        if let Term::Constant(c2) = **t2 {
-                            *self = Term::Constant(c1 / c2);
+                    Op::Div => {
+                        t1.beta_reduction_();
+                        t2.beta_reduction_();
+                        if let Term::Constant(c1) = **t1 {
+                            if let Term::Constant(c2) = **t2 {
+                                *self = Term::Constant(c1 / c2);
+                            }
                         }
                     }
-                },
-                Op::Eq => {
-                    match **t1 {
-                        Term::Constant(val1) => {
-                            match **t2 {
+                    Op::Eq => {
+                        // t1.beta_reduction_(); //TODO!
+                        // t2.beta_reduction_(); //TODO!
+                        match **t1 {
+                            Term::Constant(val1) => match **t2 {
                                 Term::Constant(val2) => {
                                     if val1 == val2 {
                                         *self = Term::cond_0()
-                                    }else{
+                                    } else {
                                         *self = Term::cond_1()
                                     }
                                 }
-                                _ => *self = Term::cond_1()
-                            }
-                        },
-                        _ => *self = Term::cond_1()
+                                _ => (), //TODO! *self = Term::cond_1();
+                            },
+                            _ => (), //TODO! *self = Term::cond_1()
+                        }
                     }
                 }
-            },
+            }
             _ => (),
         }
     }
@@ -245,7 +235,7 @@ impl Term {
                 _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
             },
             Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
-            
+
             _ => self.clone(),
         }
     }
@@ -320,7 +310,8 @@ impl Sub {
                     self.term2.clone()
                 } else if lippe {
                     if !self.term1.get_free_vars().contains(&Term::Var(arg.clone()))
-                    || !body.get_free_vars().contains(&Term::Var(self.var)){
+                        || !body.get_free_vars().contains(&Term::Var(self.var))
+                    {
                         Term::Abs(
                             arg.clone(),
                             Box::new(
@@ -332,7 +323,7 @@ impl Sub {
                                 .create_term(),
                             ),
                         )
-                    }else{
+                    } else {
                         Term::Abs(
                             b'q', //TODO: find a new variable
                             Box::new(
@@ -350,8 +341,7 @@ impl Sub {
                             ),
                         )
                     }
-                }
-                else {
+                } else {
                     Term::Abs(
                         arg.clone(),
                         Box::new(

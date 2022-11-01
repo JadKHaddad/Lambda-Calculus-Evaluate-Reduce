@@ -20,6 +20,7 @@
   reduce: true
 - term: xyx((λxy . x)(λx . x))
   reduce: true
+  # Y
 - term: (λxy . x) (λx . x) ((λx . xx)(λx . xx))
   reduce: true
   reduce_steps: 2
@@ -35,10 +36,31 @@
 - term: (λx (0=x)) 1
   reduce: true
   reduce_steps: 2
-  # fak 7
+  # Y
+- term: ((λx(λy(y((xx)y))))(λx(λy(y((xx)y)))))
+  # G
+- term: (λf(λx(((0=x)1)(x*(f(x-1))))))
+  # FAK = (YG)
+  # FAK C = ((G FAK) C)
+  # FAK C = ((G (FAK)) C)
+  # FAK 7
 - term: ((λf(λx(((0=x)1)(x*(f(x-1))))))((λf((λx(f(xx)))(λx(f(xx)))))(λf(λx(((0=x)1)(x*(f(x-1)))))))) 7 
   reduce: true
   reduce_steps: 34
+  # FAK 5
 - term: ((λf(λx(((0=x)1)(x*(f(x-1))))))((λf((λx(f(xx)))(λx(f(xx)))))(λf(λx(((0=x)1)(x*(f(x-1)))))))) 5 
   reduce: true
   reduce_steps: 26
+  # S
+- term: (λa(λx(λy(((y=0)x)(1+(ax(y-1)))))))
+  # ADD = YS
+- term: ((λx(λy(y((xx)y))))(λx(λy(y((xx)y))))) (λa(λx(λy(((y=0)x)(1+(ax(y-1)))))))
+  # ADD x 0 = x
+- term: ((λx(λy(y((xx)y))))(λx(λy(y((xx)y))))) (λa(λx(λy(((y=0)x)(1+(ax(y-1))))))) x 0
+  reduce: true
+  reduce_steps: 8
+  # ADD x (y+1) = 1 + ADD x y
+- term: ((λx(λy(y((xx)y))))(λx(λy(y((xx)y))))) (λa(λx(λy(((y=0)x)(1+(ax(y-1))))))) 1 5
+  reduce: true
+  reduce_steps: 38
+
