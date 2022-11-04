@@ -236,6 +236,7 @@ impl Term {
             },
             Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
             _ => self.clone(),
+            
         }
     }
 
