@@ -235,7 +235,6 @@ impl Term {
                 _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
             },
             Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
-
             _ => self.clone(),
         }
     }
