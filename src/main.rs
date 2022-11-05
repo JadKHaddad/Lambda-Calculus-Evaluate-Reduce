@@ -17,7 +17,7 @@ struct InputTerm {
     #[serde(skip_serializing_if = "Option::is_none")]
     print_free_variables: Option<bool>,
 }
-
+#[allow(unused_assignments)]
 fn main() {
     let files = ["terms.yaml", "strict.yaml", "dynamic.yaml"];
     for file in files {
@@ -53,14 +53,19 @@ fn main() {
                 println!("AST: {:?}", term);
             }
             if input_term.reduce.unwrap_or(false) {
+                let mut betta_term = *term.clone();
                 if let Some(reduce_steps) = input_term.reduce_steps {
                     for _ in 0..reduce_steps {
                         term.beta_reduction_();
-                        println!("Reduced: [ {} ]", term);
+                        betta_term = term.beta_reduction();
+                        println!("Reduced: [ {} ] | mathemattically", term);
+                        println!("Reduced: [ {} ] | using substitution", betta_term);
                     }
                 } else {
                     term.beta_reduction_();
-                    println!("Reduced: [ {} ]", term);
+                    betta_term = term.beta_reduction();
+                    println!("Reduced: [ {} ] | mathemattically", term);
+                    println!("Reduced: [ {} ] | using substitution", betta_term);
                 }
             }
             if input_term.print_bound_variables.unwrap_or(false) {

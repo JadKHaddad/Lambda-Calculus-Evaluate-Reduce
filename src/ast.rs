@@ -161,60 +161,36 @@ impl Term {
                 body.beta_reduction_();
             }
             Term::BinOp(op, t1, t2) => {
-                match op {
-                    Op::Add => {
-                        t1.beta_reduction_();
-                        t2.beta_reduction_();
-                        if let Term::Constant(c1) = **t1 {
-                            if let Term::Constant(c2) = **t2 {
-                                *self = Term::Constant(c1 + c2);
+                t1.beta_reduction_();
+                t2.beta_reduction_();
+                match (&**t1, &**t2) {
+                    (Term::Constant(c1), Term::Constant(c2)) => match op {
+                        Op::Add => {
+                            *self = Term::Constant(c1 + c2);
+                            return;
+                        }
+                        Op::Sub => {
+                            *self = Term::Constant(c1 - c2);
+                            return;
+                        }
+                        Op::Mul => {
+                            *self = Term::Constant(c1 * c2);
+                            return;
+                        }
+                        Op::Div => {
+                            *self = Term::Constant(c1 / c2);
+                            return;
+                        }
+                        Op::Eq => {
+                            if c1 == c2 {
+                                *self = Term::cond_0();
+                                return;
                             }
+                            *self = Term::cond_1();
+                            return;
                         }
-                    }
-                    Op::Sub => {
-                        t1.beta_reduction_();
-                        t2.beta_reduction_();
-                        if let Term::Constant(c1) = **t1 {
-                            if let Term::Constant(c2) = **t2 {
-                                *self = Term::Constant(c1 - c2);
-                            }
-                        }
-                    }
-                    Op::Mul => {
-                        t1.beta_reduction_();
-                        t2.beta_reduction_();
-                        if let Term::Constant(c1) = **t1 {
-                            if let Term::Constant(c2) = **t2 {
-                                *self = Term::Constant(c1 * c2);
-                            }
-                        }
-                    }
-                    Op::Div => {
-                        t1.beta_reduction_();
-                        t2.beta_reduction_();
-                        if let Term::Constant(c1) = **t1 {
-                            if let Term::Constant(c2) = **t2 {
-                                *self = Term::Constant(c1 / c2);
-                            }
-                        }
-                    }
-                    Op::Eq => {
-                        t1.beta_reduction_();
-                        t2.beta_reduction_();
-                        match **t1 {
-                            Term::Constant(val1) => match **t2 {
-                                Term::Constant(val2) => {
-                                    if val1 == val2 {
-                                        *self = Term::cond_0()
-                                    } else {
-                                        *self = Term::cond_1()
-                                    }
-                                }
-                                _ => (), //TODO! *self = Term::cond_1();
-                            },
-                            _ => (), //TODO! *self = Term::cond_1()
-                        }
-                    }
+                    },
+                    _ => (),
                 }
             }
             _ => (),
@@ -235,6 +211,25 @@ impl Term {
                 _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
             },
             Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
+            Term::BinOp(op, t1, t2) => {
+                let t1 = t1.beta_reduction();
+                let t2 = t2.beta_reduction();
+                match (&t1, &t2) {
+                    (Term::Constant(c1), Term::Constant(c2)) => match op {
+                        Op::Add => Term::Constant(c1 + c2),
+                        Op::Sub => Term::Constant(c1 - c2),
+                        Op::Mul => Term::Constant(c1 * c2),
+                        Op::Div => Term::Constant(c1 / c2),
+                        Op::Eq => {
+                            if c1 == c2 {
+                                return Term::cond_0();
+                            }
+                            Term::cond_1()
+                        }
+                    },
+                    _ => Term::BinOp(op.clone(), Box::new(t1), Box::new(t2)),
+                }
+            }
             _ => self.clone(),
         }
     }
@@ -276,7 +271,7 @@ pub struct Sub {
 
 impl Sub {
     pub fn create_term(&self) -> Term {
-        let lippe = false; //TODO: Make this a parameter
+        let lippe = true; //TODO: Make this a parameter
         match &self.term2 {
             Term::Var(var) => {
                 if var == &self.var {
@@ -354,7 +349,7 @@ impl Sub {
                     )
                 }
             }
-            _ => panic!(), //TODO: Throw error
+            _ => self.term2.clone(),
         }
     }
 
