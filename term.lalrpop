@@ -10,7 +10,7 @@ pub Strict: Box<Term> = {
     "(" "λ" <v:Var> <t1:Strict> ")" => Box::new(Term::Abs(v, t1)),
     <v:Var> => Box::new(Term::Var(v)),
     <n:Num> => Box::new(Term::Constant(n)),
-    <s:StrictSub> => Box::new(s.into())
+    <s:StrictSub> => Box::new(s.try_into().unwrap())
 }
 
 pub StrictSub: Sub = {
@@ -36,7 +36,7 @@ Term: Box<Term> = {
     <op:Op> => op,
     <v:Var> => Box::new(Term::Var(v)),
     <n:Num> => Box::new(Term::Constant(n)),
-    "(" <s:Sub> ")" => Box::new(s.into())
+    "(" <s:Sub> ")" => Box::new(s.try_into().unwrap())
 }
 
 Op: Box<Term> = {

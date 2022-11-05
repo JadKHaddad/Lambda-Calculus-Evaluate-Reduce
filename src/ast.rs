@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::convert;
+use std::error::Error as StdError;
 use std::fmt;
 
 #[derive(Eq, PartialEq, Debug, Clone, Hash)]
@@ -18,6 +19,29 @@ pub enum Op {
     Mul,
     Div,
     Eq,
+}
+#[derive(Debug, Clone)]
+pub enum Error {
+    NewVariableNotFound,
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::NewVariableNotFound => write!(f, "Cannot find new variable"),
+        }
+    }
+}
+
+impl StdError for Error {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        None
+    }
+    fn description(&self) -> &str {
+        match *self {
+            Error::NewVariableNotFound => "Cannot find new variable",
+        }
+    }
 }
 
 impl fmt::Display for Term {
@@ -51,6 +75,32 @@ impl Term {
 
     pub fn cond_1() -> Self {
         Term::Abs(b'x', Box::new(Term::Abs(b'y', Box::new(Term::Var(b'y')))))
+    }
+
+    pub fn get_vars(&self) -> HashSet<u8> {
+        match self {
+            Term::Constant(_) => HashSet::new(),
+            Term::Var(var) => {
+                let mut vars = HashSet::new();
+                vars.insert(*var);
+                vars
+            }
+            Term::Abs(var, term) => {
+                let mut vars = term.get_vars();
+                vars.remove(var);
+                vars
+            }
+            Term::App(t1, t2) => {
+                let mut vars = t1.get_vars();
+                vars.extend(t2.get_vars());
+                vars
+            }
+            Term::BinOp(_, t1, t2) => {
+                let mut vars = t1.get_vars();
+                vars.extend(t2.get_vars());
+                vars
+            }
+        }
     }
 
     pub fn get_bound_vars(&self) -> HashSet<Term> {
@@ -96,6 +146,17 @@ impl Term {
         }
     }
 
+    pub fn create_a_new_var(t1: &Term, t2: &Term) -> Result<u8, Error> {
+        let mut vars = t1.get_vars();
+        vars.extend(t2.get_vars());
+        for i in 1..=26 {
+            if !vars.contains(&i) {
+                return Ok(i);
+            }
+        }
+        Err(Error::NewVariableNotFound)
+    }
+
     // Decides if `var` is free in `self`.
     fn is_free(&self, var: u8) -> bool {
         let free_vars = self.get_free_vars();
@@ -109,6 +170,17 @@ impl Term {
         bound_vars.contains(&Term::Var(var))
     }
 
+    pub fn variable_convention(&self) -> bool {
+        for free in self.get_bound_vars() {
+            for bound in self.get_free_vars() {
+                if free == bound {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
     #[allow(dead_code)]
     fn contains_var(&self, var: u8) -> bool {
         match self {
@@ -117,6 +189,15 @@ impl Term {
             Term::App(t1, t2) => t1.contains_var(var) || t2.contains_var(var),
             _ => false,
         }
+    }
+
+    fn get_a_new_var(&self) -> Result<u8, Error> {
+        for i in 0..26 {
+            if !self.contains_var(i) {
+                return Ok(i);
+            }
+        }
+        Err(Error::NewVariableNotFound)
     }
 
     fn replace<'a>(&'a mut self, var: u8, subs: &Term) -> bool {
@@ -145,6 +226,7 @@ impl Term {
     // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
     // ((λx M)N) = M[x:=N] (β-Reduction)
     pub fn beta_reduction_(&mut self) {
+        //TODO: check for variable_convention and if not, perform alpha conversion
         match self {
             // beta-reduction
             Term::App(t1, t2) => match &mut **t1 {
@@ -200,38 +282,41 @@ impl Term {
 
     // Creates a reduced `Term` if possible. Performs beta reduction using substitution.
     // ((λx M)N) = M[x:=N] (β-Reduction)
-    pub fn beta_reduction(&self) -> Term {
+    pub fn beta_reduction(&self) -> Result<Term, Error> {
         match self {
             Term::App(t1, t2) => match &**t1 {
-                Term::Abs(arg, body) => Sub {
+                Term::Abs(arg, body) => Ok(Sub {
                     var: *arg,
                     term1: *t2.clone(),
                     term2: *body.clone(),
                 }
-                .into(),
-                _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
+                .try_into()?),
+                _ => Ok(Term::App(
+                    Box::new(t1.beta_reduction()?),
+                    Box::new(t2.beta_reduction()?),
+                )),
             },
-            Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
+            Term::Abs(arg, body) => Ok(Term::Abs(*arg, Box::new(body.beta_reduction()?))),
             Term::BinOp(op, t1, t2) => {
-                let t1 = t1.beta_reduction();
-                let t2 = t2.beta_reduction();
+                let t1 = t1.beta_reduction()?;
+                let t2 = t2.beta_reduction()?;
                 match (&t1, &t2) {
                     (Term::Constant(c1), Term::Constant(c2)) => match op {
-                        Op::Add => Term::Constant(c1 + c2),
-                        Op::Sub => Term::Constant(c1 - c2),
-                        Op::Mul => Term::Constant(c1 * c2),
-                        Op::Div => Term::Constant(c1 / c2),
+                        Op::Add => Ok(Term::Constant(c1 + c2)),
+                        Op::Sub => Ok(Term::Constant(c1 - c2)),
+                        Op::Mul => Ok(Term::Constant(c1 * c2)),
+                        Op::Div => Ok(Term::Constant(c1 / c2)),
                         Op::Eq => {
                             if c1 == c2 {
-                                return Term::cond_0();
+                                return Ok(Term::cond_0());
                             }
-                            Term::cond_1()
+                            Ok(Term::cond_1())
                         }
                     },
-                    _ => Term::BinOp(op.clone(), Box::new(t1), Box::new(t2)),
+                    _ => Ok(Term::BinOp(op.clone(), Box::new(t1), Box::new(t2))),
                 }
             }
-            _ => self.clone(),
+            _ => Ok(self.clone()),
         }
     }
 
@@ -281,26 +366,28 @@ impl Sub {
     }
 }
 
-impl convert::Into<Term> for Sub {
-    fn into(self) -> Term {
+impl convert::TryInto<Term> for Sub {
+    type Error = Error;
+
+    fn try_into(self) -> Result<Term, Self::Error> {
         let lippe = true; //TODO: Make this a parameter
         match &self.term2 {
             Term::Var(var) => {
                 if var == &self.var {
-                    self.term1.clone()
+                    Ok(self.term1.clone())
                 } else {
-                    self.term2.clone()
+                    Ok(self.term2.clone())
                 }
             }
-            Term::Constant(_) => self.term2.clone(),
-            Term::App(t1, t2) => Term::App(
+            Term::Constant(_) => Ok(self.term2.clone()),
+            Term::App(t1, t2) => Ok(Term::App(
                 Box::new(
                     Sub {
                         var: self.var,
                         term1: self.term1.clone(),
                         term2: t1.as_ref().clone(),
                     }
-                    .into(),
+                    .try_into()?,
                 ),
                 Box::new(
                     Sub {
@@ -308,47 +395,48 @@ impl convert::Into<Term> for Sub {
                         term1: self.term1.clone(),
                         term2: t2.as_ref().clone(),
                     }
-                    .into(),
+                    .try_into()?,
                 ),
-            ),
+            )),
             Term::Abs(arg, body) => {
                 if arg == &self.var {
-                    self.term2.clone()
+                    Ok(self.term2.clone())
                 } else if lippe {
                     if !self.term1.get_free_vars().contains(&Term::Var(arg.clone()))
                         || !body.get_free_vars().contains(&Term::Var(self.var))
                     {
-                        Term::Abs(
+                        Ok(Term::Abs(
                             arg.clone(),
                             Box::new(
                                 Sub {
                                     var: self.var,
                                     term1: self.term1.clone(),
-                                    term2: body.as_ref().clone(),
+                                    term2: *body.clone(),
                                 }
-                                .into(),
+                                .try_into()?,
                             ),
-                        )
+                        ))
                     } else {
-                        Term::Abs(
-                            b'q', //TODO: find a new variable
+                        let new_var = Term::create_a_new_var(&self.term1, &body)?;
+                        Ok(Term::Abs(
+                            new_var,
                             Box::new(
                                 Sub {
                                     var: self.var,
                                     term1: self.term1.clone(),
                                     term2: Sub {
                                         var: *arg,
-                                        term1: Term::Var(b'q'), //TODO: find a new variable
-                                        term2: body.as_ref().clone(),
+                                        term1: Term::Var(new_var),
+                                        term2: *body.clone(),
                                     }
-                                    .into(),
+                                    .try_into()?,
                                 }
-                                .into(),
+                                .try_into()?,
                             ),
-                        )
+                        ))
                     }
                 } else {
-                    Term::Abs(
+                    Ok(Term::Abs(
                         arg.clone(),
                         Box::new(
                             Sub {
@@ -356,12 +444,12 @@ impl convert::Into<Term> for Sub {
                                 term1: self.term1.clone(),
                                 term2: body.as_ref().clone(),
                             }
-                            .into(),
+                            .try_into()?,
                         ),
-                    )
+                    ))
                 }
             }
-            _ => self.term2.clone(),
+            _ => Ok(self.term2.clone()),
         }
     }
 }

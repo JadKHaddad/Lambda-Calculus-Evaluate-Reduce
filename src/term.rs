@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: 79ccddaa6fcd7875207e6d4a9eda020474522c81253904ae8f6c66f1c6968ca6
+// sha3: 1bb050224af1e94d1fbc39b9e341e5416774199f8e88c2fd8b62fe0c116daa24
 use std::str::FromStr;
 use crate::ast::{Term, Op, Sub};
 #[allow(unused_extern_crates)]
@@ -5386,7 +5386,7 @@ fn __action9<
     (_, s, _): (usize, Sub, usize),
 ) -> Box<Term>
 {
-    Box::new(s.into())
+    Box::new(s.try_into().unwrap())
 }
 
 #[allow(unused_variables)]
@@ -5549,7 +5549,7 @@ fn __action21<
     (_, _, _): (usize, &'input str, usize),
 ) -> Box<Term>
 {
-    Box::new(s.into())
+    Box::new(s.try_into().unwrap())
 }
 
 #[allow(unused_variables)]
