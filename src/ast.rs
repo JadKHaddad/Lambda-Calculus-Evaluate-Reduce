@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::convert;
 use std::fmt;
 
 #[derive(Eq, PartialEq, Debug, Clone, Hash)]
@@ -207,7 +208,7 @@ impl Term {
                     term1: *t2.clone(),
                     term2: *body.clone(),
                 }
-                .create_term(),
+                .into(),
                 _ => Term::App(Box::new(t1.beta_reduction()), Box::new(t2.beta_reduction())),
             },
             Term::Abs(arg, body) => Term::Abs(*arg, Box::new(body.beta_reduction())),
@@ -235,6 +236,7 @@ impl Term {
     }
 
     //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
+    #[allow(unused_variables)]
     pub fn alpha_conversion(&self, var: u8) -> Term {
         todo!()
     }
@@ -270,7 +272,17 @@ pub struct Sub {
 }
 
 impl Sub {
-    pub fn create_term(&self) -> Term {
+    pub fn to_sub_lippe(&self) -> String {
+        format!("Sub({}, {})[{}]", self.var as char, self.term1, self.term2)
+    }
+
+    pub fn to_sub(&self) -> String {
+        format!("{}[{} := {}]", self.term2, self.var as char, self.term1)
+    }
+}
+
+impl convert::Into<Term> for Sub {
+    fn into(self) -> Term {
         let lippe = true; //TODO: Make this a parameter
         match &self.term2 {
             Term::Var(var) => {
@@ -288,7 +300,7 @@ impl Sub {
                         term1: self.term1.clone(),
                         term2: t1.as_ref().clone(),
                     }
-                    .create_term(),
+                    .into(),
                 ),
                 Box::new(
                     Sub {
@@ -296,7 +308,7 @@ impl Sub {
                         term1: self.term1.clone(),
                         term2: t2.as_ref().clone(),
                     }
-                    .create_term(),
+                    .into(),
                 ),
             ),
             Term::Abs(arg, body) => {
@@ -314,7 +326,7 @@ impl Sub {
                                     term1: self.term1.clone(),
                                     term2: body.as_ref().clone(),
                                 }
-                                .create_term(),
+                                .into(),
                             ),
                         )
                     } else {
@@ -329,9 +341,9 @@ impl Sub {
                                         term1: Term::Var(b'q'), //TODO: find a new variable
                                         term2: body.as_ref().clone(),
                                     }
-                                    .create_term(),
+                                    .into(),
                                 }
-                                .create_term(),
+                                .into(),
                             ),
                         )
                     }
@@ -344,20 +356,12 @@ impl Sub {
                                 term1: self.term1.clone(),
                                 term2: body.as_ref().clone(),
                             }
-                            .create_term(),
+                            .into(),
                         ),
                     )
                 }
             }
             _ => self.term2.clone(),
         }
-    }
-
-    pub fn to_sub_lippe(&self) -> String {
-        format!("Sub({}, {})[{}]", self.var as char, self.term1, self.term2)
-    }
-
-    pub fn to_sub(&self) -> String {
-        format!("{}[{} := {}]", self.term2, self.var as char, self.term1)
     }
 }
