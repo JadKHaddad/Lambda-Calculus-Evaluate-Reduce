@@ -58,13 +58,13 @@ fn main() {
                     for _ in 0..reduce_steps {
                         term.beta_reduction_();
                         betta_term = term.beta_reduction();
-                        println!("Reduced: [ {} ] | mathemattically", term);
+                        println!("Reduced: [ {} ] | mathematically ", term);
                         println!("Reduced: [ {} ] | using substitution", betta_term);
                     }
                 } else {
                     term.beta_reduction_();
                     betta_term = term.beta_reduction();
-                    println!("Reduced: [ {} ] | mathemattically", term);
+                    println!("Reduced: [ {} ] | mathematically ", term);
                     println!("Reduced: [ {} ] | using substitution", betta_term);
                 }
             }
