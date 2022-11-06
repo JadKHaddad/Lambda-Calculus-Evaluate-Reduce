@@ -238,18 +238,14 @@ impl Term {
     // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
     // ((λx M)N) = M[x:=N] (β-Reduction)
     pub fn beta_reduction_(&mut self) -> Result<(), Error> {
-        // TODO: undefined behavior if variable_convention is not respected
-        // if !self.variable_convention() {
-        //     return Err(Error::VariableConvention);
-        // }
         match self {
             // beta-reduction
             Term::App(t1, t2) => {
                 match &mut **t1 {
                     Term::Abs(var, body) => {
-                        if body.replace(*var, t2) {
-                            *self = *body.clone();
-                        }
+
+                        body.replace(*var, t2);
+                        *self = *body.clone();
                         Ok(())
                     }
                     _ => {

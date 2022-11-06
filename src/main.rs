@@ -72,24 +72,19 @@ fn main() {
                         .collect::<Vec<String>>()
                 );
             }
-            let con = term.variable_convention();
-            if !con {
-                println!("Mathematical Beta Reduction may fail!"); 
-            }
             if input_term.variable_convention.unwrap_or(false) {
-                println!("Variable Convention: {}", con);
+                println!("Variable Convention: {}", term.variable_convention());
             }
-
             if input_term.reduce.unwrap_or(false) {
+                let mut betta_term = *term.clone();
                 if let Some(reduce_steps) = input_term.reduce_steps {
-                    let mut betta_term = *term.clone();
                     for _ in 0..reduce_steps {
                         match term.beta_reduction_(){
                             Ok(()) => {
                                 println!("Reduced: [ {} ] | mathematically ", term);
                             },
                             Err(e) => {
-                                println!("Error: {}", e);
+                                println!("Error: {} | mathematically", e);
                             }
                         }
 
@@ -103,12 +98,12 @@ fn main() {
                             println!("Reduced: [ {} ] | mathematically ", term);
                         },
                         Err(e) => {
-                            println!("Error: {}", e);
+                            println!("Error: {} | mathematically", e);
                         }
                     }
                     println!(
                         "Reduced: [ {} ] | using substitution",
-                        term.beta_reduction().unwrap()
+                        betta_term.beta_reduction().unwrap()
                     );
                 }
             }

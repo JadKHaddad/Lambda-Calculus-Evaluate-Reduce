@@ -87,12 +87,6 @@
   print_free_variables: true
   print_bound_variables: true
   variable_convention: true
-- term: ( (λxyz . ((uz)v))(λxy . ((vu)z)))
-  print_free_variables: true
-  print_bound_variables: true
-  variable_convention: true
-  reduce: true
-  reduce_steps: 1
 - term: ((λx ((λy (x * y)) 4)) 3)
   reduce: true
   reduce_steps: 3
@@ -102,3 +96,18 @@
   variable_convention: true
   reduce: true
   reduce_steps: 1
+- term: ( (λxyz . ((uz)v))(λxy . ((vu)z)))
+  print_free_variables: true
+  print_bound_variables: true
+  variable_convention: true
+  reduce: true
+  reduce_steps: 1
+- term: Sub(y, (λx(λy x)))[(y(λx(yx)))]
+- term: (λy (x(λx x)))[x:= (λz (zy))]
+  reduce: true
+  reduce_steps: 2
+- term: (λy (x(λx x)))(λz (zy)) # λy0.xλx0.x0λz.zy  (λy0 (x(λx0 x0)))(λz (zy)) see here we should rename x and y 
+  print_free_variables: true
+  print_bound_variables: true
+  reduce: true
+  variable_convention: true
