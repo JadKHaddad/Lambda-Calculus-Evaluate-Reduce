@@ -54,9 +54,6 @@ fn main() {
             if input_term.print_ast.unwrap_or(false) {
                 println!("AST: {:?}", term);
             }
-            if input_term.variable_convention.unwrap_or(false) {
-                println!("Variable Convention: {}", term.variable_convention());
-            }
             if input_term.print_bound_variables.unwrap_or(false) {
                 println!(
                     "Bound Variables: {:?}",
@@ -75,18 +72,40 @@ fn main() {
                         .collect::<Vec<String>>()
                 );
             }
+            let con = term.variable_convention();
+            if !con {
+                println!("Mathematical Beta Reduction may fail!"); 
+            }
+            if input_term.variable_convention.unwrap_or(false) {
+                println!("Variable Convention: {}", con);
+            }
+
             if input_term.reduce.unwrap_or(false) {
                 if let Some(reduce_steps) = input_term.reduce_steps {
                     let mut betta_term = *term.clone();
                     for _ in 0..reduce_steps {
-                        term.beta_reduction_().unwrap();
+                        match term.beta_reduction_(){
+                            Ok(()) => {
+                                println!("Reduced: [ {} ] | mathematically ", term);
+                            },
+                            Err(e) => {
+                                println!("Error: {}", e);
+                            }
+                        }
+
                         betta_term = betta_term.beta_reduction().unwrap();
-                        println!("Reduced: [ {} ] | mathematically ", term);
+
                         println!("Reduced: [ {} ] | using substitution", betta_term);
                     }
                 } else {
-                    term.beta_reduction_().unwrap();
-                    println!("Reduced: [ {} ] | mathematically ", term);
+                    match term.beta_reduction_(){
+                        Ok(()) => {
+                            println!("Reduced: [ {} ] | mathematically ", term);
+                        },
+                        Err(e) => {
+                            println!("Error: {}", e);
+                        }
+                    }
                     println!(
                         "Reduced: [ {} ] | using substitution",
                         term.beta_reduction().unwrap()

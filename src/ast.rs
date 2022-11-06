@@ -23,12 +23,14 @@ pub enum Op {
 #[derive(Debug, Clone)]
 pub enum Error {
     NewVariableNotFound,
+    VariableConvention
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::NewVariableNotFound => write!(f, "Cannot find new variable"),
+            Error::VariableConvention => write!(f, "Variable convention is not respected")
         }
     }
 }
@@ -40,6 +42,7 @@ impl StdError for Error {
     fn description(&self) -> &str {
         match *self {
             Error::NewVariableNotFound => "Cannot find new variable",
+            Error::VariableConvention => "Variable convention is not respected"
         }
     }
 }
@@ -178,9 +181,11 @@ impl Term {
     }
 
     pub fn variable_convention(&self) -> bool {
-        for bound in self.get_bound_vars() {
-            for free in self.get_free_vars() {
-                if free == bound {
+        let free_vars = self.get_free_vars();
+        let bound_vars = self.get_bound_vars();
+        for bound in bound_vars {
+            for free in &free_vars {
+                if free == &bound {
                     return false;
                 }
             }
@@ -233,11 +238,13 @@ impl Term {
     // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
     // ((λx M)N) = M[x:=N] (β-Reduction)
     pub fn beta_reduction_(&mut self) -> Result<(), Error> {
-        let free_bound_vars = self.get_vars_that_are_free_and_bound();
+        // TODO: undefined behavior if variable_convention is not respected
+        // if !self.variable_convention() {
+        //     return Err(Error::VariableConvention);
+        // }
         match self {
             // beta-reduction
             Term::App(t1, t2) => {
-                t2.alpha_conversion(&free_bound_vars)?;
                 match &mut **t1 {
                     Term::Abs(var, body) => {
                         if body.replace(*var, t2) {
@@ -469,7 +476,11 @@ impl convert::TryInto<Term> for Sub {
                     ))
                 }
             }
-            _ => Ok(self.term2.clone()),
+            Term::BinOp(..) => {
+                let mut res = self.term2.clone();
+                res.replace(self.var, &self.term1);
+                Ok(res)
+            },
         }
     }
 }
