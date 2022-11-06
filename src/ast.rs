@@ -146,12 +146,19 @@ impl Term {
         }
     }
 
+    pub fn get_vars_that_are_free_and_bound(&self) -> HashSet<Term> {
+        let mut x = self.get_free_vars();
+        let y = self.get_bound_vars();
+        x = x.intersection(&y).cloned().collect();
+        return x;
+    }
+
     pub fn create_a_new_var(t1: &Term, t2: &Term) -> Result<u8, Error> {
         let mut vars = t1.get_vars();
         vars.extend(t2.get_vars());
-        for i in 1..=26 {
-            if !vars.contains(&i) {
-                return Ok(i);
+        for i in 0..26 {
+            if !vars.contains(&(i + 'a' as u8)) {
+                return Ok(i + 'a' as u8);
             }
         }
         Err(Error::NewVariableNotFound)
@@ -171,8 +178,8 @@ impl Term {
     }
 
     pub fn variable_convention(&self) -> bool {
-        for free in self.get_bound_vars() {
-            for bound in self.get_free_vars() {
+        for bound in self.get_bound_vars() {
+            for free in self.get_free_vars() {
                 if free == bound {
                     return false;
                 }
@@ -193,8 +200,8 @@ impl Term {
 
     fn get_a_new_var(&self) -> Result<u8, Error> {
         for i in 0..26 {
-            if !self.contains_var(i) {
-                return Ok(i);
+            if !self.contains_var(i + 'a' as u8) {
+                return Ok(i + 'a' as u8);
             }
         }
         Err(Error::NewVariableNotFound)
@@ -225,58 +232,64 @@ impl Term {
 
     // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
     // ((λx M)N) = M[x:=N] (β-Reduction)
-    pub fn beta_reduction_(&mut self) {
-        //TODO: check for variable_convention and if not, perform alpha conversion
+    pub fn beta_reduction_(&mut self) -> Result<(), Error> {
+        let free_bound_vars = self.get_vars_that_are_free_and_bound();
         match self {
             // beta-reduction
-            Term::App(t1, t2) => match &mut **t1 {
-                Term::Abs(var, body) => {
-                    if body.replace(*var, t2) {
-                        *self = *body.clone();
+            Term::App(t1, t2) => {
+                t2.alpha_conversion(&free_bound_vars)?;
+                match &mut **t1 {
+                    Term::Abs(var, body) => {
+                        if body.replace(*var, t2) {
+                            *self = *body.clone();
+                        }
+                        Ok(())
+                    }
+                    _ => {
+                        t1.beta_reduction_()?;
+                        t2.beta_reduction_()?;
+                        Ok(())
                     }
                 }
-                _ => {
-                    t1.beta_reduction_();
-                    t2.beta_reduction_();
-                }
-            },
+            }
             Term::Abs(_, body) => {
-                body.beta_reduction_();
+                body.beta_reduction_()?;
+                Ok(())
             }
             Term::BinOp(op, t1, t2) => {
-                t1.beta_reduction_();
-                t2.beta_reduction_();
+                t1.beta_reduction_()?;
+                t2.beta_reduction_()?;
                 match (&**t1, &**t2) {
                     (Term::Constant(c1), Term::Constant(c2)) => match op {
                         Op::Add => {
                             *self = Term::Constant(c1 + c2);
-                            return;
+                            return Ok(());
                         }
                         Op::Sub => {
                             *self = Term::Constant(c1 - c2);
-                            return;
+                            return Ok(());
                         }
                         Op::Mul => {
                             *self = Term::Constant(c1 * c2);
-                            return;
+                            return Ok(());
                         }
                         Op::Div => {
                             *self = Term::Constant(c1 / c2);
-                            return;
+                            return Ok(());
                         }
                         Op::Eq => {
                             if c1 == c2 {
                                 *self = Term::cond_0();
-                                return;
+                                return Ok(());
                             }
                             *self = Term::cond_1();
-                            return;
+                            return Ok(());
                         }
                     },
-                    _ => (),
+                    _ => Ok(()),
                 }
             }
-            _ => (),
+            _ => Ok(()),
         }
     }
 
@@ -321,9 +334,16 @@ impl Term {
     }
 
     //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
-    #[allow(unused_variables)]
-    pub fn alpha_conversion(&self, var: u8) -> Term {
-        todo!()
+    pub fn alpha_conversion(&mut self, free_bound_vars: &HashSet<Term>) -> Result<(), Error> {
+        for free_bound in free_bound_vars {
+            if let Term::Var(var) = free_bound {
+                if self.is_free(*var) {
+                    let new_var = self.get_a_new_var()?;
+                    self.replace(*var, &Term::Var(new_var));
+                }
+            }
+        }
+        Ok(())
     }
 
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {

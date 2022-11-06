@@ -16,6 +16,8 @@ struct InputTerm {
     print_bound_variables: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     print_free_variables: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    variable_convention: Option<bool>,
 }
 
 fn main() {
@@ -52,23 +54,8 @@ fn main() {
             if input_term.print_ast.unwrap_or(false) {
                 println!("AST: {:?}", term);
             }
-            if input_term.reduce.unwrap_or(false) {
-                if let Some(reduce_steps) = input_term.reduce_steps {
-                    let mut betta_term;
-                    for _ in 0..reduce_steps {
-                        term.beta_reduction_();
-                        betta_term = term.beta_reduction().unwrap();
-                        println!("Reduced: [ {} ] | mathematically ", term);
-                        println!("Reduced: [ {} ] | using substitution", betta_term);
-                    }
-                } else {
-                    term.beta_reduction_();
-                    println!("Reduced: [ {} ] | mathematically ", term);
-                    println!(
-                        "Reduced: [ {} ] | using substitution",
-                        term.beta_reduction().unwrap()
-                    );
-                }
+            if input_term.variable_convention.unwrap_or(false) {
+                println!("Variable Convention: {}", term.variable_convention());
             }
             if input_term.print_bound_variables.unwrap_or(false) {
                 println!(
@@ -87,6 +74,24 @@ fn main() {
                         .map(|x| x.to_string())
                         .collect::<Vec<String>>()
                 );
+            }
+            if input_term.reduce.unwrap_or(false) {
+                if let Some(reduce_steps) = input_term.reduce_steps {
+                    let mut betta_term = *term.clone();
+                    for _ in 0..reduce_steps {
+                        term.beta_reduction_().unwrap();
+                        betta_term = betta_term.beta_reduction().unwrap();
+                        println!("Reduced: [ {} ] | mathematically ", term);
+                        println!("Reduced: [ {} ] | using substitution", betta_term);
+                    }
+                } else {
+                    term.beta_reduction_().unwrap();
+                    println!("Reduced: [ {} ] | mathematically ", term);
+                    println!(
+                        "Reduced: [ {} ] | using substitution",
+                        term.beta_reduction().unwrap()
+                    );
+                }
             }
         }
         println!("----------------------------");

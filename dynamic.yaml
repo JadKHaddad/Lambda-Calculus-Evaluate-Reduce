@@ -78,3 +78,14 @@
 - term: (λf((λx(f(xx)))(λx(f(xx))))) (λa(λx(λy(((y=0)x)(1+(ax(y-1))))))) 1 5
   reduce: true
   reduce_steps: 33
+- term: (λy (x(λx x)))[x:= (λz (zy))]
+  variable_convention: true
+- term: (λy (y((λy y)(λy (yy)))))
+  reduce: true
+  variable_convention: true
+- term: ( (λxyz . ((uz)v))(λxy . ((vu)z)))
+  print_free_variables: true
+  print_bound_variables: true
+  variable_convention: true
+  reduce: true
+  reduce_steps: 5
