@@ -23,14 +23,16 @@ pub enum Op {
 #[derive(Debug, Clone)]
 pub enum Error {
     NewVariableNotFound,
-    VariableConvention
+    VariableConvention,
+    VariableNotFree,
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::NewVariableNotFound => write!(f, "Cannot find new variable"),
-            Error::VariableConvention => write!(f, "Variable convention is not respected")
+            Error::VariableConvention => write!(f, "Variable convention is not respected"),
+            Error::VariableNotFree => write!(f, "Variable is not free"),
         }
     }
 }
@@ -42,7 +44,8 @@ impl StdError for Error {
     fn description(&self) -> &str {
         match *self {
             Error::NewVariableNotFound => "Cannot find new variable",
-            Error::VariableConvention => "Variable convention is not respected"
+            Error::VariableConvention => "Variable convention is not respected",
+            Error::VariableNotFree => "Variable is not free",
         }
     }
 }
@@ -121,6 +124,12 @@ impl Term {
                 x.extend(y);
                 return x;
             }
+            Term::BinOp(_, t1, t2) => {
+                let mut x = t1.get_bound_vars();
+                let y = t2.get_bound_vars();
+                x.extend(y);
+                return x;
+            }
             _ => HashSet::new(),
         }
     }
@@ -145,7 +154,13 @@ impl Term {
                 x.extend(y);
                 return x;
             }
-            _ => HashSet::new(),
+            Term::BinOp(_, t1, t2) => {
+                let mut x = t1.get_free_vars();
+                let y = t2.get_free_vars();
+                x.extend(y);
+                return x;
+            }
+            Term::Constant(_) => HashSet::new(),
         }
     }
 
@@ -240,21 +255,18 @@ impl Term {
     pub fn beta_reduction_(&mut self) -> Result<(), Error> {
         match self {
             // beta-reduction
-            Term::App(t1, t2) => {
-                match &mut **t1 {
-                    Term::Abs(var, body) => {
-
-                        body.replace(*var, t2);
-                        *self = *body.clone();
-                        Ok(())
-                    }
-                    _ => {
-                        t1.beta_reduction_()?;
-                        t2.beta_reduction_()?;
-                        Ok(())
-                    }
+            Term::App(t1, t2) => match &mut **t1 {
+                Term::Abs(var, body) => {
+                    body.replace(*var, t2);
+                    *self = *body.clone();
+                    Ok(())
                 }
-            }
+                _ => {
+                    t1.beta_reduction_()?;
+                    t2.beta_reduction_()?;
+                    Ok(())
+                }
+            },
             Term::Abs(_, body) => {
                 body.beta_reduction_()?;
                 Ok(())
@@ -337,16 +349,30 @@ impl Term {
     }
 
     //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
-    pub fn alpha_conversion(&mut self, free_bound_vars: &HashSet<Term>) -> Result<(), Error> {
-        for free_bound in free_bound_vars {
-            if let Term::Var(var) = free_bound {
-                if self.is_free(*var) {
-                    let new_var = self.get_a_new_var()?;
-                    self.replace(*var, &Term::Var(new_var));
+    pub fn alpha_conversion(&self, new_var: u8) -> Result<Term, Error> {
+        match self {
+            Term::Abs(arg, body) => {
+                if body.get_free_vars().contains(&Term::Var(new_var)) {
+                    return Err(Error::VariableNotFree);
                 }
+                Ok(Sub {
+                    var: *arg,
+                    term1: Term::Var(new_var),
+                    term2: Term::Abs(new_var, body.clone()),
+                }
+                .try_into()?)
             }
+            Term::App(t1, t2) => Ok(Term::App(
+                Box::new(t1.alpha_conversion(new_var)?),
+                Box::new(t2.alpha_conversion(new_var)?),
+            )),
+            Term::BinOp(op, t1, t2) => Ok(Term::BinOp(
+                op.clone(),
+                Box::new(t1.alpha_conversion(new_var)?),
+                Box::new(t2.alpha_conversion(new_var)?),
+            )),
+            _ => Ok(self.clone()),
         }
-        Ok(())
     }
 
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
@@ -476,7 +502,7 @@ impl convert::TryInto<Term> for Sub {
                 let mut res = self.term2.clone();
                 res.replace(self.var, &self.term1);
                 Ok(res)
-            },
+            }
         }
     }
 }

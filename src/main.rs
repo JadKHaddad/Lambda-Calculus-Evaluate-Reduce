@@ -21,6 +21,15 @@ struct InputTerm {
 }
 
 fn main() {
+
+    // let term = term::TermsParser::new()
+    // .parse("(λy (x(λx x)))(λz (((z + z)y)(λx (x + x))))")
+    // .expect(&format!("Unable to parse term"));
+    // println!("{:?}", term);
+    // let t = term.alpha_conversion(b'q').unwrap();
+    // println!("{t}");
+    // std::process::exit(0);
+
     let files = ["terms.yaml", "strict.yaml", "dynamic.yaml"];
     for file in files {
         println!("------------ {} ------------", file);
