@@ -111,3 +111,8 @@
   print_bound_variables: true
   reduce: true
   variable_convention: true
+- term: (λr (x(λk k)))(λz (zy)) # λy0.xλx0.x0λz.zy  (λy0 (x(λx0 x0)))(λz (zy)) see here we should rename x and y 
+  print_free_variables: true
+  print_bound_variables: true
+  reduce: true
+  variable_convention: true

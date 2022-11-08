@@ -24,7 +24,7 @@ pub enum Op {
 pub enum Error {
     NewVariableNotFound,
     VariableConvention,
-    VariableNotFree,
+    VariableIsFree,
 }
 
 impl fmt::Display for Error {
@@ -32,7 +32,7 @@ impl fmt::Display for Error {
         match self {
             Error::NewVariableNotFound => write!(f, "Cannot find new variable"),
             Error::VariableConvention => write!(f, "Variable convention is not respected"),
-            Error::VariableNotFree => write!(f, "Variable is not free"),
+            Error::VariableIsFree => write!(f, "Variable is free"),
         }
     }
 }
@@ -45,7 +45,7 @@ impl StdError for Error {
         match *self {
             Error::NewVariableNotFound => "Cannot find new variable",
             Error::VariableConvention => "Variable convention is not respected",
-            Error::VariableNotFree => "Variable is not free",
+            Error::VariableIsFree => "Variable is free",
         }
     }
 }
@@ -227,7 +227,7 @@ impl Term {
         Err(Error::NewVariableNotFound)
     }
 
-    fn replace<'a>(&'a mut self, var: u8, subs: &Term) -> bool {
+    fn replace_<'a>(&'a mut self, var: u8, subs: &Term) -> bool {
         match self {
             Term::Var(var2) => {
                 if var == *var2 {
@@ -241,12 +241,50 @@ impl Term {
                 } else if subs.is_free(*arg) {
                     false
                 } else {
-                    body.replace(var, subs)
+                    body.replace_(var, subs)
                 }
             }
-            Term::App(t1, t2) => t1.replace(var, subs) && t2.replace(var, subs),
+            Term::App(t1, t2) => t1.replace_(var, subs) && t2.replace_(var, subs),
             Term::Constant(_) => true,
-            Term::BinOp(_, t1, t2) => t1.replace(var, subs) && t2.replace(var, subs),
+            Term::BinOp(_, t1, t2) => t1.replace_(var, subs) && t2.replace_(var, subs),
+        }
+    }
+
+    pub fn replace_not_free(&self, old_var: u8, new_var: u8) -> Term {
+        match self {
+            Term::Constant(_) => self.clone(),
+            Term::Var(var) => {
+                if !self.is_free(old_var) {
+                    if *var == old_var {
+                        return Term::Var(new_var);
+                    } else {
+                        return self.clone();
+                    }
+                }
+                self.clone()
+            }
+            Term::Abs(arg, body) => {
+                if !body.is_free(old_var) {
+                    if *arg == old_var {
+                        return Term::Abs(
+                            new_var,
+                            Box::new(body.replace_not_free(old_var, new_var)),
+                        );
+                    } else {
+                        return Term::Abs(*arg, Box::new(body.replace_not_free(old_var, new_var)));
+                    }
+                }
+                self.clone()
+            }
+            Term::App(t1, t2) => Term::App(
+                Box::new(t1.replace_not_free(old_var, new_var)),
+                Box::new(t2.replace_not_free(old_var, new_var)),
+            ),
+            Term::BinOp(op, t1, t2) => Term::BinOp(
+                op.clone(),
+                Box::new(t1.replace_not_free(old_var, new_var)),
+                Box::new(t2.replace_not_free(old_var, new_var)),
+            ),
         }
     }
 
@@ -257,7 +295,7 @@ impl Term {
             // beta-reduction
             Term::App(t1, t2) => match &mut **t1 {
                 Term::Abs(var, body) => {
-                    body.replace(*var, t2);
+                    body.replace_(*var, t2);
                     *self = *body.clone();
                     Ok(())
                 }
@@ -348,12 +386,13 @@ impl Term {
         }
     }
 
+    // TODO: check
     //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
     pub fn alpha_conversion(&self, new_var: u8) -> Result<Term, Error> {
         match self {
             Term::Abs(arg, body) => {
                 if body.get_free_vars().contains(&Term::Var(new_var)) {
-                    return Err(Error::VariableNotFree);
+                    return Err(Error::VariableIsFree);
                 }
                 Ok(Sub {
                     var: *arg,
@@ -375,6 +414,19 @@ impl Term {
         }
     }
 
+    // TODO: Check
+    pub fn perform_variable_convention(&self) -> Result<Term, Error> {
+        let bound_free_vars = self.get_vars_that_are_free_and_bound();
+        let mut new_term = self.clone();
+        for bound_free_var in bound_free_vars {
+            if let Term::Var(var) = bound_free_var {
+                let new_var = self.get_a_new_var()?;
+                new_term = new_term.replace_not_free(var, new_var);
+            }
+        }
+        Ok(new_term)
+    }
+    
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
         let mut t = t1;
         for var in vs.iter() {
@@ -498,11 +550,25 @@ impl convert::TryInto<Term> for Sub {
                     ))
                 }
             }
-            Term::BinOp(..) => {
-                let mut res = self.term2.clone();
-                res.replace(self.var, &self.term1);
-                Ok(res)
-            }
+            Term::BinOp(op, t1, t2) => Ok(Term::BinOp(
+                op.clone(),
+                Box::new(
+                    Sub {
+                        var: self.var,
+                        term1: self.term1.clone(),
+                        term2: t1.as_ref().clone(),
+                    }
+                    .try_into()?,
+                ),
+                Box::new(
+                    Sub {
+                        var: self.var,
+                        term1: self.term1.clone(),
+                        term2: t2.as_ref().clone(),
+                    }
+                    .try_into()?,
+                ),
+            )),
         }
     }
 }

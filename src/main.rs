@@ -21,15 +21,17 @@ struct InputTerm {
 }
 
 fn main() {
-
+    // (λr (x(λk k)))(λz (zy))
     // let term = term::TermsParser::new()
-    // .parse("(λy (x(λx x)))(λz (((z + z)y)(λx (x + x))))")
+    // .parse("(λy (x(λx x)))(λz (zy))")
     // .expect(&format!("Unable to parse term"));
-    // println!("{:?}", term);
-    // let t = term.alpha_conversion(b'q').unwrap();
+    // println!("{}", term);
+    // println!("{}", term.variable_convention());
+    // //let t = term.alpha_conversion(b'q').unwrap();
+    // let t = term.alpha_conversion(b'q').unwrap().alpha_conversion(b'z').unwrap();
     // println!("{t}");
+    // println!("{}", term.variable_convention());
     // std::process::exit(0);
-
     let files = ["terms.yaml", "strict.yaml", "dynamic.yaml"];
     for file in files {
         println!("------------ {} ------------", file);
