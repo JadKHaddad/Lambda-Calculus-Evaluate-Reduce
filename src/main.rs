@@ -21,6 +21,14 @@ struct InputTerm {
 }
 
 fn main() {
+    let mut term = term::TermsParser::new()
+    .parse("(λx . xx)((λx . x)(λx . x))")
+    .expect(&format!("Unable to parse term"));
+    let mut term_2 = term.clone();
+    term.beta_reduction_(true).unwrap();
+    term_2.beta_reduction_(false).unwrap();
+    println!("outer reduction: {}", term);
+    println!("inner reduction: {}", term_2);
     // (λr (x(λk k)))(λz (zy))
     // let term = term::TermsParser::new()
     // .parse("(λy (x(λx x)))(λz (zy))")
@@ -31,7 +39,7 @@ fn main() {
     // let t = term.alpha_conversion(b'q').unwrap().alpha_conversion(b'z').unwrap();
     // println!("{t}");
     // println!("{}", term.variable_convention());
-    // std::process::exit(0);
+    std::process::exit(0);
     let files = ["terms.yaml", "strict.yaml", "dynamic.yaml"];
     for file in files {
         println!("------------ {} ------------", file);
@@ -90,7 +98,7 @@ fn main() {
                 let mut betta_term = *term.clone();
                 if let Some(reduce_steps) = input_term.reduce_steps {
                     for _ in 0..reduce_steps {
-                        match term.beta_reduction_(){
+                        match term.beta_reduction_(true){
                             Ok(()) => {
                                 println!("Reduced: [ {} ] | mathematically ", term);
                             },
@@ -104,7 +112,7 @@ fn main() {
                         println!("Reduced: [ {} ] | using substitution", betta_term);
                     }
                 } else {
-                    match term.beta_reduction_(){
+                    match term.beta_reduction_(true){
                         Ok(()) => {
                             println!("Reduced: [ {} ] | mathematically ", term);
                         },

@@ -290,28 +290,36 @@ impl Term {
 
     // Reduces `self` if possible. `self` must be mutable. Performs beta reduction mathematically.
     // ((λx M)N) = M[x:=N] (β-Reduction)
-    pub fn beta_reduction_(&mut self) -> Result<(), Error> {
+    pub fn beta_reduction_(&mut self, outer: bool) -> Result<(), Error> {
         match self {
             // beta-reduction
             Term::App(t1, t2) => match &mut **t1 {
                 Term::Abs(var, body) => {
+                    if outer {
+                        // outermost beta-reduction
+                        body.replace_(*var, t2);
+                        *self = *body.clone();
+                        return Ok(());
+                    }
+                    // innermost beta-reduction
+                    t2.beta_reduction_(outer)?;
                     body.replace_(*var, t2);
                     *self = *body.clone();
                     Ok(())
                 }
                 _ => {
-                    t1.beta_reduction_()?;
-                    t2.beta_reduction_()?;
+                    t1.beta_reduction_(outer)?;
+                    t2.beta_reduction_(outer)?;
                     Ok(())
                 }
             },
             Term::Abs(_, body) => {
-                body.beta_reduction_()?;
+                body.beta_reduction_(outer)?;
                 Ok(())
             }
             Term::BinOp(op, t1, t2) => {
-                t1.beta_reduction_()?;
-                t2.beta_reduction_()?;
+                t1.beta_reduction_(outer)?;
+                t2.beta_reduction_(outer)?;
                 match (&**t1, &**t2) {
                     (Term::Constant(c1), Term::Constant(c2)) => match op {
                         Op::Add => {
@@ -426,7 +434,7 @@ impl Term {
         }
         Ok(new_term)
     }
-    
+
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
         let mut t = t1;
         for var in vs.iter() {
