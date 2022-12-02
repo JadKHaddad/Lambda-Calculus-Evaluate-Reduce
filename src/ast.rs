@@ -218,6 +218,7 @@ impl Term {
         }
     }
 
+    #[allow(dead_code)]
     fn get_a_new_var(&self) -> Result<u8, Error> {
         for i in 0..26 {
             if !self.contains_var(i + 'a' as u8) {
@@ -356,24 +357,35 @@ impl Term {
 
     // Creates a reduced `Term` if possible. Performs beta reduction using substitution.
     // ((λx M)N) = M[x:=N] (β-Reduction)
-    pub fn beta_reduction(&self) -> Result<Term, Error> {
+    pub fn beta_reduction(&self, outer: bool) -> Result<Term, Error> {
         match self {
             Term::App(t1, t2) => match &**t1 {
-                Term::Abs(arg, body) => Ok(Sub {
-                    var: *arg,
-                    term1: *t2.clone(),
-                    term2: *body.clone(),
+                Term::Abs(arg, body) => {
+                    if outer {
+                        return Ok(Sub {
+                            var: *arg,
+                            term1: *t2.clone(),
+                            term2: *body.clone(),
+                        }
+                        .try_into()?);
+                    }
+                    let t2 = t2.beta_reduction(outer)?;
+                    return Ok(Sub {
+                        var: *arg,
+                        term1: t2,
+                        term2: *body.clone(),
+                    }
+                    .try_into()?);
                 }
-                .try_into()?),
                 _ => Ok(Term::App(
-                    Box::new(t1.beta_reduction()?),
-                    Box::new(t2.beta_reduction()?),
+                    Box::new(t1.beta_reduction(outer)?),
+                    Box::new(t2.beta_reduction(outer)?),
                 )),
             },
-            Term::Abs(arg, body) => Ok(Term::Abs(*arg, Box::new(body.beta_reduction()?))),
+            Term::Abs(arg, body) => Ok(Term::Abs(*arg, Box::new(body.beta_reduction(outer)?))),
             Term::BinOp(op, t1, t2) => {
-                let t1 = t1.beta_reduction()?;
-                let t2 = t2.beta_reduction()?;
+                let t1 = t1.beta_reduction(outer)?;
+                let t2 = t2.beta_reduction(outer)?;
                 match (&t1, &t2) {
                     (Term::Constant(c1), Term::Constant(c2)) => match op {
                         Op::Add => Ok(Term::Constant(c1 + c2)),
@@ -394,7 +406,7 @@ impl Term {
         }
     }
 
-    // TODO: check
+    // TODO: not proven right
     //If y not in FV(M): λx.M = λy.M[x:=y] (α-conversion)
     pub fn alpha_conversion(&self, new_var: u8) -> Result<Term, Error> {
         match self {
@@ -420,19 +432,6 @@ impl Term {
             )),
             _ => Ok(self.clone()),
         }
-    }
-
-    // TODO: Check
-    pub fn perform_variable_convention(&self) -> Result<Term, Error> {
-        let bound_free_vars = self.get_vars_that_are_free_and_bound();
-        let mut new_term = self.clone();
-        for bound_free_var in bound_free_vars {
-            if let Term::Var(var) = bound_free_var {
-                let new_var = self.get_a_new_var()?;
-                new_term = new_term.replace_not_free(var, new_var);
-            }
-        }
-        Ok(new_term)
     }
 
     pub fn create_nested_abs(vs: Vec<u8>, t1: Box<Term>) -> Box<Term> {
@@ -465,6 +464,7 @@ pub struct Sub {
     pub term2: Term,
 }
 
+// Does not assume variable_convention and will perform it
 impl Sub {
     pub fn to_sub_lippe(&self) -> String {
         format!("Sub({}, {})[{}]", self.var as char, self.term1, self.term2)

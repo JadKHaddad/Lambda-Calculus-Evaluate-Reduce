@@ -116,3 +116,9 @@
   print_bound_variables: true
   reduce: true
   variable_convention: true
+- term: (λx . xx)((λx . x)(λx . x))
+  reduce: true
+  outer: false
+- term: (λx . xx)((λx . x)(λx . x))
+  reduce: true
+  outer: true
