@@ -122,3 +122,71 @@
 - term: (λx . xx)((λx . x)(λx . x))
   reduce: true
   outer: true
+- term: (λxyz . (λz . zx)((λuv . uv)y(λx . x)))bc
+  reduce: true
+  reduce_steps: 5
+- term: (λxy . xy(xy))ab
+  reduce: true
+  reduce_steps: 5
+# UeB.8 Auf.4 1
+- term: ((((λxyz . xz(yz))(λxy . x))(λxy . x))(λxy . x))
+- term: (((λxyz . xz(yz))(λxy . x))(λxy . x))
+- term: (((((λxyz . xz(yz))(λxy . x))(λxy . x))(λxy . x))(((λxyz . xz(yz))(λxy . x))(λxy . x)))
+  reduce: true
+  reduce_steps: 6
+# K
+- term: (λxy . x)
+# KK
+- term: ((λxy . x)(λxy . x))
+# S
+- term: (λxyz . xz(yz))
+# KS
+- term: ((λxy . x)(λxyz . xz(yz)))
+# I = SKK = ((SK)K)
+- term: (((λxyz . xz(yz))(λxy . x))(λxy . x))
+# D = SS(KI) = ((SS)(KI))
+- term: (((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))
+# DI
+- term: ((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))
+# DII = (DI)I
+- term: (((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((λxyz . xz(yz))(λxy . x))(λxy . x)))
+# DI(DII)
+- term: (((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((λxyz . xz(yz))(λxy . x))(λxy . x))))
+# (S(DI(DII)))
+- term: ((λxyz . xz(yz))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((λxyz . xz(yz))(λxy . x))(λxy . x)))))
+# KI
+- term: ((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))
+# UeB.8 Auf.4 2
+# S(DI(DII))(KI) = ((S(DI(DII)))(KI))
+- term: (((λxyz . xz(yz))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((λxyz . xz(yz))(λxy . x))(λxy . x)))))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))
+  reduce: true
+  reduce_steps: 20
+# DSK
+- term: (((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))(λxyz . xz(yz)))(λxy . x))
+# DOUBLE: Dfi
+- term: (((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) f i
+  reduce: true
+  reduce_steps: 11
+# BIND: B = S(KS)K = ((S(KS))K)
+# Bnmo
+- term: (((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))nmo
+  reduce: true
+  reduce_steps: 9
+# BS
+- term: ((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))
+# BK
+- term: ((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))
+# BKS = (BK)S
+- term: (((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz)))
+# CHANGE: C = S(BS(BKS))(KK) = (S(BS(BKS))(KK))
+# Cmno
+- term: ((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))mno
+  reduce: true
+  reduce_steps: 22
+# CD
+- term: (((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))(((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))))
+# UeB.8 Auf.4 3
+# B(DSK)CD = ((B(DSK))CD)
+- term: (((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))(λxyz . xz(yz)))(λxy . x)))(((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))(((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))))
+  reduce: true
+  reduce_steps: 26
