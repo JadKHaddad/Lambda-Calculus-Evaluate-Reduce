@@ -190,3 +190,13 @@
 - term: (((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))(λxyz . xz(yz)))(λxy . x)))(((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))(((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))))
   reduce: true
   reduce_steps: 26
+- term: Sub(x, (λz(zy)))[(λy(x(λx x)))]
+- term: (λx . y) x
+  reduce: true
+- term: (λx.(λy.yx)z)v
+  reduce: true
+  reduce_steps: 5
+- term: (λu.v)((λx.xxy)(λu.uuy)) # TODO: inner and outer not working properly, may git rid of it, cuz we dont have really much control on what to reduce!
+  reduce: true
+  outer: false
+  reduce_steps: 3  
