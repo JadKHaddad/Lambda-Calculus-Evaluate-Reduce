@@ -128,12 +128,8 @@
 - term: (λxy . xy(xy))ab
   reduce: true
   reduce_steps: 5
-# UeB.8 Auf.4 1
-- term: ((((λxyz . xz(yz))(λxy . x))(λxy . x))(λxy . x))
-- term: (((λxyz . xz(yz))(λxy . x))(λxy . x))
-- term: (((((λxyz . xz(yz))(λxy . x))(λxy . x))(λxy . x))(((λxyz . xz(yz))(λxy . x))(λxy . x)))
-  reduce: true
-  reduce_steps: 6
+# I
+- term: (λx . x)
 # K
 - term: (λxy . x)
 # KK
@@ -142,7 +138,7 @@
 - term: (λxyz . xz(yz))
 # KS
 - term: ((λxy . x)(λxyz . xz(yz)))
-# I = SKK = ((SK)K)
+# I = SKK = ((SK)K) = (λx . x)
 - term: (((λxyz . xz(yz))(λxy . x))(λxy . x))
 # D = SS(KI) = ((SS)(KI))
 - term: (((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))
@@ -156,11 +152,6 @@
 - term: ((λxyz . xz(yz))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((λxyz . xz(yz))(λxy . x))(λxy . x)))))
 # KI
 - term: ((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))
-# UeB.8 Auf.4 2
-# S(DI(DII))(KI) = ((S(DI(DII)))(KI))
-- term: (((λxyz . xz(yz))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))) (((λxyz . xz(yz))(λxy . x))(λxy . x)))(((λxyz . xz(yz))(λxy . x))(λxy . x)))))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))
-  reduce: true
-  reduce_steps: 20
 # DSK
 - term: (((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))(λxyz . xz(yz)))(λxy . x))
 # DOUBLE: Dfi
@@ -185,11 +176,6 @@
   reduce_steps: 22
 # CD
 - term: (((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))(((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x)))))
-# UeB.8 Auf.4 3
-# B(DSK)CD = ((B(DSK))CD)
-- term: (((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))(λxyz . xz(yz)))(λxy . x)))(((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))(((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))))
-  reduce: true
-  reduce_steps: 26
 - term: Sub(x, (λz(zy)))[(λy(x(λx x)))]
 - term: (λx . y) x
   reduce: true
@@ -200,3 +186,15 @@
   reduce: true
   outer: false
   reduce_steps: 3  
+# UeB.8 Auf.4 1 ((((SK)K)K)I) = (λxy.y)
+- term: (((((λxyz . xz(yz)) (λxy . x))(λxy . x)) (λxy . x))(λx . x)) ab
+  reduce: true
+  reduce_steps: 8
+# UeB.8 Auf.4 2 S(DI(DII))(KI) = (λz (z (λx x)))
+- term: (λxyz . xz(yz))((λxyz . xz(yz))(λxyz . xz(yz))((λxy . x)(λx . x))(λx . x)((λxyz . xz(yz))(λxyz . xz(yz))((λxy . x)(λx . x))(λx . x)(λx . x)))((λxy . x)(λx . x))
+  reduce: true
+  reduce_steps: 14
+# UeB.8 Auf.4 3 B(DSK)CD = ((B(DSK))CD) = (λxy. yxx)
+- term: (((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(((((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))(λxyz . xz(yz)))(λxy . x)))(((λxyz . xz(yz))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxyz . xz(yz)))(((((λxyz . xz(yz))((λxy . x)(λxyz . xz(yz))))(λxy . x))(λxy . x))(λxyz . xz(yz))))((λxy . x)(λxy . x)))(((λxyz . xz(yz))(λxyz . xz(yz)))((λxy . x)(((λxyz . xz(yz))(λxy . x))(λxy . x))))))
+  reduce: true
+  reduce_steps: 26
